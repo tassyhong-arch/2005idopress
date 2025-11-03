@@ -148,8 +148,13 @@ body {
     font-size: var(--font-size-base);
     line-height: var(--line-height);
     letter-spacing: var(--letter-spacing);
-    overflow-y: auto;
+    overflow: hidden;
     height: calc(100vh - var(--header-height) - var(--nav-height));
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    cursor: grab;
+    position: relative;
 }
 
 .book-content p {
