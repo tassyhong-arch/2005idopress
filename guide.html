@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이북 리더 사용 가이드</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 { color: #007bff; }
+        h2 { color: #28a745; margin-top: 30px; }
+        .step { 
+            background: #f8f9fa; 
+            padding: 15px; 
+            margin: 10px 0; 
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        .tip {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📚 이북 리더 사용 가이드</h1>
+    
+    <h2>🎯 도서 목록 보기</h2>
+    <div class="step">
+        <strong>1단계:</strong> 화면 우측 상단의 <strong>"📚 도서"</strong> 버튼 클릭
+        <br>위치: 진행률 표시 → 초록색 "도서" 버튼 → 회색 "설정" 버튼
+    </div>
+    
+    <h2>➕ 새 도서 추가하기</h2>
+    
+    <h3>방법 1: URL에서 다운로드</h3>
+    <div class="step">
+        <strong>1.</strong> "도서" 버튼 → "📥 도서 다운로드" 클릭<br>
+        <strong>2.</strong> 텍스트 파일 URL 입력<br>
+        <strong>예시:</strong> <code>https://www.gutenberg.org/files/11/11-0.txt</code><br>
+        <strong>3.</strong> 도서 제목 입력 (선택사항)<br>
+        <strong>4.</strong> 다운로드 완료!
+    </div>
+    
+    <h3>방법 2: 텍스트 직접 추가</h3>
+    <div class="step">
+        <strong>1.</strong> "도서" 버튼 → "➕ 텍스트 추가" 클릭<br>
+        <strong>2.</strong> 도서 제목 입력<br>
+        <strong>3.</strong> 내용 입력 또는 복사/붙여넣기<br>
+        <strong>4.</strong> 확인!
+    </div>
+    
+    <h2>📖 도서 읽기</h2>
+    <div class="step">
+        <strong>1.</strong> "도서" 버튼으로 도서 목록 열기<br>
+        <strong>2.</strong> 읽고 싶은 도서 찾기<br>
+        <strong>3.</strong> <strong>"📖 읽기"</strong> 버튼 클릭<br>
+        <strong>4.</strong> 도서가 열립니다!
+    </div>
+    
+    <h2>🎨 독서 설정</h2>
+    
+    <h3>폰트 크기 조절</h3>
+    <div class="step">
+        • <strong>A⁻</strong> 버튼: 글자 크기 축소<br>
+        • <strong>A⁺</strong> 버튼: 글자 크기 확대<br>
+        • <strong>⟲</strong> 버튼: 기본 크기로 초기화<br>
+        • 키보드: <code>+</code>, <code>-</code>, <code>0</code> 키
+    </div>
+    
+    <h3>테마 변경</h3>
+    <div class="step">
+        <strong>1.</strong> "⚙️ 설정" 버튼 클릭<br>
+        <strong>2.</strong> "테마" 드롭다운 선택<br>
+        • <strong>라이트</strong>: 밝은 배경<br>
+        • <strong>다크</strong>: 어두운 배경<br>
+        • <strong>세피아</strong>: 종이책 느낌
+    </div>
+    
+    <h3>줄/글자 간격</h3>
+    <div class="step">
+        "설정" → "줄 간격" 또는 "글자 간격" 선택<br>
+        원하는 간격으로 조절 가능
+    </div>
+    
+    <h2>📱 페이지 이동</h2>
+    <div class="step">
+        • <strong>◀ 버튼</strong> 또는 <code>←</code> 키: 이전 페이지<br>
+        • <strong>▶ 버튼</strong> 또는 <code>→</code> 키: 다음 페이지<br>
+        • <strong>모바일</strong>: 좌우 스와이프
+    </div>
+    
+    <h2>💾 저장 및 동기화</h2>
+    <div class="step">
+        • 도서는 자동으로 <strong>IndexedDB</strong>에 저장<br>
+        • 읽기 위치 자동 저장<br>
+        • 최대 <strong>100MB</strong> 저장 가능<br>
+        • 오프라인에서도 읽기 가능
+    </div>
+    
+    <div class="tip">
+        <strong>💡 팁:</strong> 
+        <ul>
+            <li>처음 사용할 때 "기본 도서"가 이미 로드되어 있습니다</li>
+            <li>도서를 추가하면 목록에서 선택하여 읽을 수 있습니다</li>
+            <li>마지막으로 읽던 위치로 자동 이동합니다</li>
+            <li>앱을 설치하면 오프라인에서도 사용 가능합니다</li>
+        </ul>
+    </div>
+    
+    <h2>🔍 문제 해결</h2>
+    <div class="step">
+        <strong>도서 목록이 안 보여요</strong><br>
+        → "도서" 버튼(초록색)을 클릭하세요<br><br>
+        
+        <strong>도서 추가가 안 돼요</strong><br>
+        → 온라인 상태인지 확인하세요 (URL 다운로드 시)<br>
+        → 텍스트 추가는 오프라인에서도 가능합니다<br><br>
+        
+        <strong>앱 설치가 안 돼요</strong><br>
+        → 페이지 강제 새로고침 (Ctrl+Shift+R)<br>
+        → HTTPS 연결 확인<br>
+        → Chrome/Edge/Safari 최신 버전 사용
+    </div>
+    
+    <hr>
+    <p style="text-align: center; color: #666;">
+        <strong>2005idopress</strong> - 언제 어디서나 책을 읽으세요! 📚✨
+    </p>
+</body>
+</html>

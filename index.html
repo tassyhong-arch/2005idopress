@@ -39,11 +39,16 @@
                         <div id="progressFill" class="progress-fill"></div>
                     </div>
                 </div>
-                <button id="bookManagerBtn" class="control-btn" title="도서 관리">
-                    <i class="fas fa-books"></i>
+                <button id="bookManagerBtn" class="control-btn book-manager-btn" title="도서 관리">
+                    <i class="fas fa-book"></i>
+                    <span class="btn-text">도서</span>
                 </button>
-                <button id="settingsBtn" class="control-btn" title="설정">
+                <button id="settingsBtn" class="control-btn settings-btn" title="설정">
                     <i class="fas fa-cog"></i>
+                    <span class="btn-text">설정</span>
+                </button>
+                <button id="helpBtn" class="control-btn help-btn" title="도움말">
+                    <i class="fas fa-question-circle"></i>
                 </button>
             </div>
         </div>
@@ -125,8 +130,15 @@
                 <div id="bookList" class="book-list">
                     <div class="empty-state">
                         <i class="fas fa-book"></i>
-                        <p>저장된 도서가 없습니다.</p>
-                        <small>온라인 상태에서 도서를 다운로드하세요.</small>
+                        <p><strong>저장된 도서가 없습니다</strong></p>
+                        <small style="display: block; margin-top: 8px;">
+                            📥 위의 <strong>"도서 다운로드"</strong> 또는 <strong>"텍스트 추가"</strong> 버튼을 눌러<br>
+                            새 도서를 추가하세요!
+                        </small>
+                        <small style="display: block; margin-top: 12px; color: #6c757d;">
+                            💡 팁: 현재 보고 있는 "기본 도서"는 샘플입니다.<br>
+                            원하는 텍스트를 추가하여 나만의 도서관을 만드세요!
+                        </small>
                     </div>
                 </div>
                 <div class="storage-info">

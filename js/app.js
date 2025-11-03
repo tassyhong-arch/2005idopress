@@ -40,6 +40,12 @@ class EbookApp {
     }
 
     setupEventListeners() {
+        // 도움말 버튼
+        const helpBtn = document.getElementById('helpBtn');
+        helpBtn?.addEventListener('click', () => {
+            this.showHelp();
+        });
+
         // 설정 모달
         const settingsBtn = document.getElementById('settingsBtn');
         const closeModal = document.getElementById('closeModal');
@@ -161,6 +167,46 @@ class EbookApp {
         if (window.reader) {
             window.reader.recalculatePages();
         }
+    }
+
+    showHelp() {
+        const helpText = `
+📚 이북 리더 사용 방법
+
+🎯 도서 목록 보기:
+→ 우측 상단 "📚 도서" 버튼 클릭
+
+➕ 도서 추가하기:
+1. "도서" 버튼 클릭
+2. "도서 다운로드" 또는 "텍스트 추가" 선택
+3. URL 입력 또는 텍스트 붙여넣기
+
+📖 도서 읽기:
+1. "도서" 버튼으로 목록 열기
+2. 읽고 싶은 도서 선택
+3. "읽기" 버튼 클릭
+
+🎨 폰트 조절:
+• A⁻ : 축소
+• A⁺ : 확대
+• ⟲ : 초기화
+
+🎨 테마 변경:
+→ "설정" 버튼 → "테마" 선택
+
+📱 페이지 이동:
+• ◀▶ 버튼 또는 ←→ 키
+• 모바일: 좌우 스와이프
+
+💡 팁:
+• 모든 도서는 오프라인에서도 읽을 수 있습니다
+• 읽기 위치가 자동으로 저장됩니다
+• 최대 100MB까지 저장 가능합니다
+
+자세한 가이드: guide.html 참고
+        `.trim();
+
+        alert(helpText);
     }
 }
 

@@ -73,6 +73,37 @@ body {
     transform: translateY(0);
 }
 
+.control-btn .btn-text {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.book-manager-btn {
+    background-color: #28a745;
+}
+
+.book-manager-btn:hover {
+    background-color: #218838;
+}
+
+.settings-btn {
+    background-color: #6c757d;
+}
+
+.settings-btn:hover {
+    background-color: #5a6268;
+}
+
+.help-btn {
+    background-color: #17a2b8;
+    padding: 8px 10px;
+}
+
+.help-btn:hover {
+    background-color: #138496;
+}
+
 .reading-progress {
     display: flex;
     align-items: center;
