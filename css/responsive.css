@@ -208,9 +208,14 @@ body {
     bottom: 0;
     background-color: var(--modal-overlay);
     z-index: 200;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.modal.show {
+    display: flex;
     align-items: center;
     justify-content: center;
-    padding: 16px;
 }
 
 .modal-content {
@@ -218,9 +223,11 @@ body {
     border-radius: var(--border-radius);
     max-width: 500px;
     width: 100%;
-    max-height: 80vh;
-    overflow-y: auto;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
     box-shadow: var(--shadow);
+    margin: auto;
 }
 
 .modal-header {
@@ -258,6 +265,8 @@ body {
 
 .modal-body {
     padding: 20px;
+    overflow-y: auto;
+    flex: 1;
 }
 
 .setting-group {
@@ -347,8 +356,7 @@ body {
     display: grid;
     gap: 12px;
     margin-bottom: 20px;
-    max-height: 400px;
-    overflow-y: auto;
+    max-height: none;
 }
 
 .book-card {
@@ -357,6 +365,8 @@ body {
     border-radius: var(--border-radius);
     padding: 16px;
     transition: var(--transition);
+    display: flex;
+    flex-direction: column;
 }
 
 .book-card:hover {
@@ -394,6 +404,7 @@ body {
 
 .book-card-body {
     margin-bottom: 12px;
+    flex: 1;
 }
 
 .book-info {

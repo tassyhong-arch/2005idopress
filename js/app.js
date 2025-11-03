@@ -53,10 +53,12 @@ class EbookApp {
 
         settingsBtn?.addEventListener('click', () => {
             settingsModal.style.display = 'flex';
+            settingsModal.classList.add('show');
         });
 
         closeModal?.addEventListener('click', () => {
             settingsModal.style.display = 'none';
+            settingsModal.classList.remove('show');
         });
 
         // 설정 변경
@@ -98,6 +100,7 @@ class EbookApp {
         settingsModal?.addEventListener('click', (e) => {
             if (e.target === settingsModal) {
                 settingsModal.style.display = 'none';
+                settingsModal.classList.remove('show');
             }
         });
     }

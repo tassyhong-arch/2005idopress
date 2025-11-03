@@ -17,17 +17,20 @@ class BookManager {
 
         bookManagerBtn?.addEventListener('click', async () => {
             bookModal.style.display = 'flex';
+            bookModal.classList.add('show');
             await this.refreshBookList();
         });
 
         closeBookModal?.addEventListener('click', () => {
             bookModal.style.display = 'none';
+            bookModal.classList.remove('show');
         });
 
         // 모달 외부 클릭 시 닫기
         bookModal?.addEventListener('click', (e) => {
             if (e.target === bookModal) {
                 bookModal.style.display = 'none';
+                bookModal.classList.remove('show');
             }
         });
 
@@ -162,6 +165,7 @@ class BookManager {
                 const bookModal = document.getElementById('bookModal');
                 if (bookModal) {
                     bookModal.style.display = 'none';
+                    bookModal.classList.remove('show');
                 }
             }
         } catch (error) {
