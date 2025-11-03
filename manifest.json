@@ -2,19 +2,28 @@
   "name": "오프라인 이북 리더",
   "short_name": "이북리더",
   "description": "인터넷 없이도 도서를 읽을 수 있는 PWA 이북 리더",
-  "start_url": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#007bff",
-  "orientation": "portrait-primary",
+  "orientation": "any",
   "icons": [
     {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiMwMDdiZmYiLz4KPHN2ZyB4PSI0OCIgeT0iNDgiIHdpZHRoPSI5NiIgaGVpZ2h0PSI5NiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSI+CjxwYXRoIGQ9Ik0xOCAySDZDNi45IDJINy44MUM4LjUgMi4wOSA5LjIzIDIuMjUgOS45MSAyLjY1QzEwLjU5IDMuMDQgMTEuMTMgMy41NiAxMS41IDQuMTRDMTIuMDIgMy4yNSAxMi43OSAyLjU1IDEzLjcgMi4xNEMxNC42MiAxLjc0IDE1LjY1IDEuNjcgMTYuNiAxLjkzQzE3LjU2IDIuMTkgMTguMzcgMi43NiAxOC45MSAzLjU1QzE5LjQ1IDQuMzUgMTkuNzIgNS4zMSAxOS42OSA2LjI5VjE2LjI5QzE5LjY5IDE3LjMgMTkuMjkgMTguMjkgMTguNTYgMTkuMDZDMTcuODMgMTkuODIgMTYuODQgMjAuMjkgMTUuNzUgMjAuMjlINy44QzYuNzIgMjAuMjkgNS43NSAxOS44MiA1LjA1IDE5LjA2QzQuMzUgMTguMjkgMy45NSAxNy4zIDMuOTUgMTYuMjlWNy43QzMuOTUgNy4xOSA0LjE2IDYuNjEgNC41MyA2LjE2QzQuOSA1LjcxIDUuNDEgNS40MSA1Ljk1IDUuMzlWNi4yOUM1Ljk1IDcuMzEgNi4zNSA4LjI5IDcuMDggOS4wNkM3LjgxIDkuODIgOC44IDEwLjI5IDkuODkgMTAuMjlIMTcuODlWMTYuMjlDMTcuODkgMTYuNzUgMTcuNzIgMTcuMjEgMTcuNDIgMTcuNTVDMTcuMTIgMTcuODkgMTYuNzEgMTguMDkgMTYuMjkgMTguMDlIMTAuNzVDMTAuMzMgMTguMDkgOS45MiAxNy44OSA5LjYyIDE3LjU1QzkuMzIgMTcuMjEgOS4xNSAxNi43NSA5LjE1IDE2LjI5VjEzLjI5QzkuMTUgMTIuODMgOS4zMiAxMi4zNyA5LjYyIDEyLjAzQzkuOTIgMTEuNjkgMTAuMzMgMTEuNDkgMTAuNzUgMTEuNDlIMTYuMjVDMTYuNjcgMTEuNDkgMTcuMDggMTEuNjkgMTcuMzggMTIuMDNDMTcuNjggMTIuMzcgMTcuODUgMTIuODMgMTcuODUgMTMuMjlWMTYuMjkiLz4KPHN2ZyB4PSI4NCIgeT0iMTI4IiB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPgo8cGF0aCBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJTMi40OCAyMiA3IDIyIDE5LjUyIDE4IDE5LjUyIDEyIDE3LjUyIDIgMTIgMlpNMTIgMjBDNy41OSAyMCA0IDE2LjQxIDQgMTJTNy41OSA0IDEyIDRTMjAgNy41OSAyMCAxMiAxNi40MSAyMCAxMiAyMFpNMTMgMTJIMTdWMTBIMTNWMTJaIi8+Cjwvc3ZnPgo8L3N2Zz4K",
+      "src": "./icons/icon-192.svg",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ],
   "categories": ["books", "education", "productivity"],
   "lang": "ko",
-  "dir": "ltr"
+  "dir": "ltr",
+  "prefer_related_applications": false
 }
