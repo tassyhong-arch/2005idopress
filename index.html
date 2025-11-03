@@ -8,11 +8,14 @@
     <link rel="stylesheet" href="css/responsive.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/svg+xml" href="./icons/icon-192.svg">
+    <link rel="apple-touch-icon" href="./icons/icon-192.svg">
     <meta name="theme-color" content="#007bff">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="이북리더">
+    <meta name="description" content="인터넷 없이도 도서를 읽을 수 있는 PWA 이북 리더">
 </head>
 <body>
     <header class="header">
@@ -36,11 +39,16 @@
                         <div id="progressFill" class="progress-fill"></div>
                     </div>
                 </div>
-                <button id="bookManagerBtn" class="control-btn" title="도서 관리">
-                    <i class="fas fa-books"></i>
+                <button id="bookManagerBtn" class="control-btn book-manager-btn" title="도서 관리">
+                    <i class="fas fa-book"></i>
+                    <span class="btn-text">도서</span>
                 </button>
-                <button id="settingsBtn" class="control-btn" title="설정">
+                <button id="settingsBtn" class="control-btn settings-btn" title="설정">
                     <i class="fas fa-cog"></i>
+                    <span class="btn-text">설정</span>
+                </button>
+                <button id="helpBtn" class="control-btn help-btn" title="도움말">
+                    <i class="fas fa-question-circle"></i>
                 </button>
             </div>
         </div>
@@ -115,6 +123,9 @@
                     <button id="addTextBookBtn" class="action-btn secondary">
                         <i class="fas fa-plus"></i> 텍스트 추가
                     </button>
+                    <button id="loadSampleBtn" class="action-btn success">
+                        <i class="fas fa-book-open"></i> 샘플 도서 (주생전)
+                    </button>
                     <button id="storageStatsBtn" class="action-btn info">
                         <i class="fas fa-chart-pie"></i> 저장소 통계
                     </button>
@@ -122,8 +133,15 @@
                 <div id="bookList" class="book-list">
                     <div class="empty-state">
                         <i class="fas fa-book"></i>
-                        <p>저장된 도서가 없습니다.</p>
-                        <small>온라인 상태에서 도서를 다운로드하세요.</small>
+                        <p><strong>저장된 도서가 없습니다</strong></p>
+                        <small style="display: block; margin-top: 8px;">
+                            📥 위의 <strong>"도서 다운로드"</strong> 또는 <strong>"텍스트 추가"</strong> 버튼을 눌러<br>
+                            새 도서를 추가하세요!
+                        </small>
+                        <small style="display: block; margin-top: 12px; color: #6c757d;">
+                            💡 팁: 현재 보고 있는 "기본 도서"는 샘플입니다.<br>
+                            원하는 텍스트를 추가하여 나만의 도서관을 만드세요!
+                        </small>
                     </div>
                 </div>
                 <div class="storage-info">
@@ -156,6 +174,8 @@
     <script src="js/storage.js"></script>
     <script src="js/download.js"></script>
     <script src="js/book-manager.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/bookmark.js"></script>
     <script src="js/pwa.js"></script>
 </body>
 </html>

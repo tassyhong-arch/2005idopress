@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>캐시 초기화</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .status {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+        }
+        .status.success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        .status.error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        .status.warning {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        .instructions {
+            margin: 20px 0;
+            padding: 15px;
+            background: #e7f3ff;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .step {
+            margin: 10px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        .step:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+        #logArea {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 20px 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 캐시 및 Service Worker 초기화</h1>
+        
+        <div class="instructions">
+            <strong>📋 이 페이지의 목적:</strong><br>
+            최신 UI 업데이트를 적용하기 위해 브라우저 캐시와 Service Worker를 완전히 초기화합니다.
+        </div>
+
+        <div id="status" class="status">
+            대기 중... 버튼을 클릭하여 시작하세요.
+        </div>
+
+        <button class="btn-danger" onclick="clearEverything()">
+            🗑️ 모든 캐시 및 데이터 초기화
+        </button>
+
+        <button class="btn-primary" onclick="unregisterServiceWorker()">
+            🔧 Service Worker 등록 해제
+        </button>
+
+        <button class="btn-success" onclick="reloadApp()">
+            ♻️ 앱 새로고침 (초기화 후 실행)
+        </button>
+
+        <div class="instructions">
+            <strong>📝 권장 순서:</strong>
+            <div class="step">1. "모든 캐시 및 데이터 초기화" 클릭</div>
+            <div class="step">2. "Service Worker 등록 해제" 클릭</div>
+            <div class="step">3. "앱 새로고침" 클릭</div>
+            <div class="step">4. 브라우저 개발자도구(F12)에서 "Application > Service Workers > Unregister" 확인</div>
+            <div class="step">5. 하드 리프레시 (Ctrl+Shift+R 또는 Cmd+Shift+R)</div>
+        </div>
+
+        <div id="logArea">콘솔 로그가 여기에 표시됩니다...\n</div>
+    </div>
+
+    <script>
+        const logArea = document.getElementById('logArea');
+        const statusDiv = document.getElementById('status');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            logArea.textContent += `[${timestamp}] ${message}\n`;
+            logArea.scrollTop = logArea.scrollHeight;
+            console.log(message);
+        }
+
+        function updateStatus(message, type = 'info') {
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+        }
+
+        async function clearEverything() {
+            log('🗑️ 모든 캐시 및 데이터 초기화 시작...');
+            updateStatus('🗑️ 초기화 중...', 'warning');
+
+            try {
+                // 1. Cache Storage 삭제
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    log(`발견된 캐시: ${cacheNames.length}개`);
+                    
+                    for (const cacheName of cacheNames) {
+                        await caches.delete(cacheName);
+                        log(`✓ 캐시 삭제: ${cacheName}`);
+                    }
+                    log('✅ 모든 Cache Storage 삭제 완료');
+                } else {
+                    log('⚠️ Cache API를 사용할 수 없습니다');
+                }
+
+                // 2. LocalStorage 삭제
+                const localStorageKeys = Object.keys(localStorage);
+                log(`LocalStorage 항목: ${localStorageKeys.length}개`);
+                localStorage.clear();
+                log('✅ LocalStorage 초기화 완료');
+
+                // 3. SessionStorage 삭제
+                sessionStorage.clear();
+                log('✅ SessionStorage 초기화 완료');
+
+                // 4. IndexedDB 삭제
+                if ('indexedDB' in window) {
+                    const databases = await indexedDB.databases();
+                    for (const db of databases) {
+                        if (db.name) {
+                            indexedDB.deleteDatabase(db.name);
+                            log(`✓ IndexedDB 삭제: ${db.name}`);
+                        }
+                    }
+                    log('✅ IndexedDB 초기화 완료');
+                }
+
+                updateStatus('✅ 모든 캐시 및 데이터가 초기화되었습니다!', 'success');
+                log('🎉 초기화 완료! 이제 Service Worker를 등록 해제하세요.');
+
+            } catch (error) {
+                log(`❌ 에러 발생: ${error.message}`, 'error');
+                updateStatus(`❌ 초기화 실패: ${error.message}`, 'error');
+            }
+        }
+
+        async function unregisterServiceWorker() {
+            log('🔧 Service Worker 등록 해제 시작...');
+            updateStatus('🔧 Service Worker 등록 해제 중...', 'warning');
+
+            try {
+                if ('serviceWorker' in navigator) {
+                    const registrations = await navigator.serviceWorker.getRegistrations();
+                    log(`발견된 Service Worker: ${registrations.length}개`);
+
+                    for (const registration of registrations) {
+                        const success = await registration.unregister();
+                        if (success) {
+                            log(`✓ Service Worker 등록 해제 성공: ${registration.scope}`);
+                        } else {
+                            log(`⚠️ Service Worker 등록 해제 실패: ${registration.scope}`);
+                        }
+                    }
+
+                    if (registrations.length === 0) {
+                        log('ℹ️ 등록된 Service Worker가 없습니다');
+                    }
+
+                    updateStatus('✅ Service Worker 등록이 해제되었습니다!', 'success');
+                    log('🎉 Service Worker 등록 해제 완료! 이제 앱을 새로고침하세요.');
+                } else {
+                    log('⚠️ Service Worker를 지원하지 않는 브라우저입니다');
+                    updateStatus('⚠️ Service Worker를 사용할 수 없습니다', 'warning');
+                }
+            } catch (error) {
+                log(`❌ 에러 발생: ${error.message}`, 'error');
+                updateStatus(`❌ 등록 해제 실패: ${error.message}`, 'error');
+            }
+        }
+
+        function reloadApp() {
+            log('♻️ 앱 새로고침...');
+            updateStatus('♻️ 새로고침 중...', 'warning');
+            
+            setTimeout(() => {
+                log('🔄 3초 후 index.html로 이동합니다...');
+                setTimeout(() => {
+                    window.location.href = './index.html?v=' + Date.now();
+                }, 3000);
+            }, 1000);
+        }
+
+        // 페이지 로드 시 현재 상태 확인
+        window.addEventListener('load', async () => {
+            log('📱 페이지 로드 완료');
+            log('🔍 현재 상태 확인 중...\n');
+
+            // Cache 확인
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                log(`💾 현재 캐시: ${cacheNames.length}개`);
+                cacheNames.forEach(name => log(`  - ${name}`));
+            }
+
+            // Service Worker 확인
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                log(`\n⚙️ 현재 Service Worker: ${registrations.length}개`);
+                registrations.forEach(reg => log(`  - ${reg.scope}`));
+            }
+
+            // LocalStorage 확인
+            const lsKeys = Object.keys(localStorage);
+            log(`\n📦 LocalStorage 항목: ${lsKeys.length}개`);
+            if (lsKeys.length > 0 && lsKeys.length < 10) {
+                lsKeys.forEach(key => log(`  - ${key}`));
+            }
+
+            // IndexedDB 확인
+            if ('indexedDB' in window) {
+                const databases = await indexedDB.databases();
+                log(`\n🗄️ IndexedDB: ${databases.length}개`);
+                databases.forEach(db => log(`  - ${db.name} (v${db.version})`));
+            }
+
+            log('\n✅ 상태 확인 완료\n');
+            updateStatus('📊 현재 상태가 로그에 표시되었습니다. 초기화 버튼을 눌러 시작하세요.', 'info');
+        });
+    </script>
+</body>
+</html>
