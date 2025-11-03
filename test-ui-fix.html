@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UI Fix Test - Modal & Book Card</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        body {
+            padding: 20px;
+            background-color: var(--color-bg);
+        }
+        .test-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background: var(--color-header);
+            border-radius: var(--border-radius);
+        }
+        .test-section h2 {
+            margin-bottom: 16px;
+            color: var(--color-text);
+        }
+        .test-btn {
+            padding: 12px 24px;
+            background-color: var(--color-accent);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            margin-right: 8px;
+        }
+        .test-btn:hover {
+            background-color: var(--color-hover);
+        }
+    </style>
+</head>
+<body>
+    <h1 style="margin-bottom: 24px; color: var(--color-text);">🎨 UI Fix Test Page</h1>
+    
+    <div class="test-section">
+        <h2>📱 Book Card Test</h2>
+        <p style="margin-bottom: 16px; color: var(--color-text);">
+            이 책 카드는 실제 앱에서 사용되는 것과 동일한 구조입니다.<br>
+            <strong>"📖 읽기"</strong> 버튼이 카드 하단에 정상적으로 보여야 합니다.
+        </p>
+        <div class="book-list" style="max-height: none;">
+            <div class="book-card">
+                <div class="book-card-header">
+                    <h3 class="book-card-title">주생전 (周生傳)</h3>
+                    <button class="book-delete-btn" title="삭제">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="book-card-body">
+                    <div class="book-info">
+                        <span><i class="fas fa-file-alt"></i> 56.73 KB</span>
+                        <span><i class="fas fa-calendar-plus"></i> 2025.11.4</span>
+                    </div>
+                    <div class="book-info">
+                        <span><i class="fas fa-book-reader"></i> 읽지 않음</span>
+                    </div>
+                </div>
+                <button class="book-open-btn">
+                    <i class="fas fa-book-open"></i> 읽기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔄 Modal Test</h2>
+        <p style="margin-bottom: 16px; color: var(--color-text);">
+            아래 버튼을 클릭하면 모달이 화면 중앙에 올바르게 표시되어야 합니다.<br>
+            모달이 겹치지 않고, 내용이 스크롤 가능해야 합니다.
+        </p>
+        <button class="test-btn" onclick="openTestModal()">
+            <i class="fas fa-window-restore"></i> 모달 열기
+        </button>
+    </div>
+
+    <!-- Test Modal -->
+    <div id="testModal" class="modal">
+        <div class="modal-content book-modal">
+            <div class="modal-header">
+                <h2>테스트 모달</h2>
+                <button class="close-btn" onclick="closeTestModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 16px; color: var(--color-text);">
+                    ✅ 이 모달이 화면 중앙에 올바르게 표시되면 성공입니다!
+                </p>
+                
+                <div class="book-actions">
+                    <button class="action-btn primary">
+                        <i class="fas fa-download"></i> 도서 다운로드
+                    </button>
+                    <button class="action-btn secondary">
+                        <i class="fas fa-plus"></i> 텍스트 추가
+                    </button>
+                    <button class="action-btn success">
+                        <i class="fas fa-book-open"></i> 샘플 도서
+                    </button>
+                    <button class="action-btn info">
+                        <i class="fas fa-chart-pie"></i> 저장소 통계
+                    </button>
+                </div>
+
+                <div class="book-list" style="max-height: none; margin-top: 20px;">
+                    <div class="book-card">
+                        <div class="book-card-header">
+                            <h3 class="book-card-title">테스트 도서 1</h3>
+                            <button class="book-delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="book-card-body">
+                            <div class="book-info">
+                                <span><i class="fas fa-file-alt"></i> 45.2 KB</span>
+                                <span><i class="fas fa-calendar-plus"></i> 2025.11.3</span>
+                            </div>
+                        </div>
+                        <button class="book-open-btn">
+                            <i class="fas fa-book-open"></i> 읽기
+                        </button>
+                    </div>
+
+                    <div class="book-card">
+                        <div class="book-card-header">
+                            <h3 class="book-card-title">테스트 도서 2</h3>
+                            <button class="book-delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="book-card-body">
+                            <div class="book-info">
+                                <span><i class="fas fa-file-alt"></i> 32.8 KB</span>
+                                <span><i class="fas fa-calendar-plus"></i> 2025.11.2</span>
+                            </div>
+                        </div>
+                        <button class="book-open-btn">
+                            <i class="fas fa-book-open"></i> 읽기
+                        </button>
+                    </div>
+                </div>
+
+                <p style="margin-top: 20px; padding: 12px; background: rgba(0,123,255,0.1); border-radius: 8px; color: var(--color-text);">
+                    <strong>✨ 테스트 포인트:</strong><br>
+                    1. 모달이 화면 중앙에 위치<br>
+                    2. 모달 내용이 겹치지 않음<br>
+                    3. 읽기 버튼이 각 카드 하단에 표시<br>
+                    4. 모달 외부 클릭 시 닫힘
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openTestModal() {
+            const modal = document.getElementById('testModal');
+            modal.style.display = 'flex';
+            modal.classList.add('show');
+        }
+
+        function closeTestModal() {
+            const modal = document.getElementById('testModal');
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+        }
+
+        // 모달 외부 클릭 시 닫기
+        document.getElementById('testModal').addEventListener('click', (e) => {
+            if (e.target.id === 'testModal') {
+                closeTestModal();
+            }
+        });
+
+        // 테스트 결과 출력
+        window.addEventListener('load', () => {
+            console.log('✅ UI Fix Test Page Loaded');
+            console.log('📱 Book Card: Check if read button is visible');
+            console.log('🔄 Modal: Click button to test modal display');
+        });
+    </script>
+</body>
+</html>
