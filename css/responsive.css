@@ -325,6 +325,15 @@ body {
     background-color: #d4d4d4;
 }
 
+.action-btn.success {
+    background-color: #28a745;
+    color: white;
+}
+
+.action-btn.success:hover {
+    background-color: #218838;
+}
+
 .action-btn.info {
     background-color: #17a2b8;
     color: white;

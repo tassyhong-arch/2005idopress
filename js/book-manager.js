@@ -47,6 +47,12 @@ class BookManager {
             }
         });
 
+        // 샘플 도서 로드 버튼
+        const loadSampleBtn = document.getElementById('loadSampleBtn');
+        loadSampleBtn?.addEventListener('click', async () => {
+            await this.loadSampleBook();
+        });
+
         // 저장소 통계 버튼
         const storageStatsBtn = document.getElementById('storageStatsBtn');
         storageStatsBtn?.addEventListener('click', () => {
@@ -211,6 +217,48 @@ class BookManager {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    async loadSampleBook() {
+        try {
+            if (window.app) {
+                window.app.showNotification('샘플 도서 로드 중... 📚');
+            }
+
+            // jusaengjeon.txt 파일 로드
+            const response = await fetch('./jusaengjeon.txt');
+            if (!response.ok) {
+                throw new Error('샘플 파일을 찾을 수 없습니다');
+            }
+
+            const content = await response.text();
+            
+            if (!content || content.trim().length === 0) {
+                throw new Error('샘플 파일이 비어있습니다');
+            }
+
+            // 도서 저장
+            if (window.bookStorage) {
+                await window.bookStorage.saveBook('주생전 (周生傳)', content, {
+                    source: 'sample',
+                    author: '작자 미상',
+                    description: 'Google Docs 샘플 도서 - 한국 고전소설',
+                    addedAt: Date.now()
+                });
+
+                // 목록 새로고침
+                await this.refreshBookList();
+
+                if (window.app) {
+                    window.app.showNotification('✅ "주생전" 샘플 도서가 추가되었습니다! 📚');
+                }
+            }
+        } catch (error) {
+            console.error('샘플 도서 로드 실패:', error);
+            if (window.app) {
+                window.app.showNotification(`샘플 로드 실패: ${error.message}`, 'error');
+            }
+        }
     }
 
     async showStorageStats() {
