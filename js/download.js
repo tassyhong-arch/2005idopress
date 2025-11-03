@@ -25,10 +25,16 @@ class BookDownloader {
                 window.app.showNotification('도서 다운로드 중... ⏳');
             }
 
+            // Google Docs URL인 경우 특별 처리
+            if (url.includes('docs.google.com')) {
+                console.log('Google Docs URL 감지:', url);
+            }
+
             // URL에서 텍스트 가져오기
             const response = await fetch(url, {
                 mode: 'cors',
-                cache: 'no-cache'
+                cache: 'no-cache',
+                credentials: 'omit'
             });
 
             if (!response.ok) {
@@ -67,9 +73,25 @@ class BookDownloader {
 
         } catch (error) {
             console.error('다운로드 실패:', error);
-            if (window.app) {
-                window.app.showNotification(`다운로드 실패: ${error.message}`, 'error');
+            
+            let errorMessage = error.message;
+            
+            // Google Docs 특정 에러 메시지
+            if (url.includes('docs.google.com')) {
+                if (error.message.includes('CORS') || error.message.includes('fetch')) {
+                    errorMessage = 'Google Docs 접근 실패: 문서가 "링크가 있는 모든 사용자"로 공개되어 있는지 확인하세요';
+                } else if (error.message.includes('404') || error.message.includes('403')) {
+                    errorMessage = 'Google Docs 접근 권한 없음: 문서 공유 설정을 확인하세요';
+                }
             }
+            
+            if (window.app) {
+                window.app.showNotification(`다운로드 실패: ${errorMessage}`, 'error');
+            }
+            
+            // 콘솔에 자세한 정보 출력
+            console.error('URL:', url);
+            console.error('Error details:', error);
         } finally {
             this.isDownloading = false;
         }

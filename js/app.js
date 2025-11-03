@@ -169,6 +169,24 @@ class EbookApp {
         }
     }
 
+    async testGoogleDocs(docUrl) {
+        if (!window.bookDownloader) {
+            console.error('BookDownloader가 초기화되지 않았습니다');
+            return;
+        }
+        
+        console.log('Google Docs 테스트 시작:', docUrl);
+        const title = 'Google Docs 테스트 도서';
+        
+        try {
+            await window.bookDownloader.downloadFromUrl(docUrl, title);
+            this.showNotification('Google Docs 다운로드 성공! 📚');
+        } catch (error) {
+            console.error('테스트 실패:', error);
+            this.showNotification('테스트 실패: ' + error.message, 'error');
+        }
+    }
+
     showHelp() {
         const helpText = `
 📚 이북 리더 사용 방법

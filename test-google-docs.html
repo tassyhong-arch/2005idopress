@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Docs 다운로드 테스트</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        .test-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+        }
+        .url-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            margin: 10px 0;
+        }
+        .btn {
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .btn-success {
+            background: #28a745;
+        }
+        .btn-success:hover {
+            background: #218838;
+        }
+        .result {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Google Docs 다운로드 테스트</h1>
+        <p>이북 리더에서 Google Docs 문서를 다운로드하는 기능을 테스트합니다.</p>
+
+        <div class="test-box">
+            <h3>🔗 테스트 URL</h3>
+            <p>주생전 (한국 고전소설):</p>
+            <input type="text" class="url-input" id="googleDocsUrl" 
+                   value="https://docs.google.com/document/d/1zJow-NjTe6vzNiPwqQBaDPQ0PxBJtqyilEYNhPi3RZI/edit?usp=sharing">
+            
+            <div style="margin-top: 15px;">
+                <button class="btn" onclick="convertUrl()">🔄 URL 변환</button>
+                <button class="btn btn-success" onclick="downloadBook()">📥 다운로드 테스트</button>
+            </div>
+        </div>
+
+        <div id="convertedUrl"></div>
+        <div id="status"></div>
+        <div id="result"></div>
+
+        <div class="info">
+            <strong>💡 사용 방법:</strong>
+            <ol>
+                <li><strong>"URL 변환"</strong> 버튼을 클릭하면 Google Docs URL이 내보내기 형식으로 변환됩니다</li>
+                <li><strong>"다운로드 테스트"</strong> 버튼을 클릭하면 실제로 문서를 다운로드합니다</li>
+                <li>변환된 URL을 복사해서 이북 리더의 "도서 다운로드"에서 사용할 수 있습니다</li>
+            </ol>
+        </div>
+
+        <div class="test-box">
+            <h3>📋 이북 리더에서 사용하기</h3>
+            <ol>
+                <li>이북 리더로 돌아가기</li>
+                <li><strong>"📚 도서"</strong> 버튼 클릭</li>
+                <li><strong>"도서 다운로드"</strong> 선택</li>
+                <li>위의 Google Docs URL 붙여넣기</li>
+                <li>제목 입력: <code>주생전</code></li>
+                <li>완료! 📖</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function convertUrl() {
+            const input = document.getElementById('googleDocsUrl');
+            const url = input.value.trim();
+            
+            if (!url) {
+                showStatus('URL을 입력하세요', 'error');
+                return;
+            }
+
+            // Google Docs URL 변환
+            const docIdMatch = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+            if (docIdMatch) {
+                const docId = docIdMatch[1];
+                const exportUrl = `https://docs.google.com/document/d/${docId}/export?format=txt`;
+                
+                document.getElementById('convertedUrl').innerHTML = `
+                    <div class="success">
+                        <strong>✅ 변환 성공!</strong><br>
+                        <strong>내보내기 URL:</strong><br>
+                        <code style="word-break: break-all;">${exportUrl}</code><br>
+                        <button class="btn" style="margin-top: 10px;" onclick="copyUrl('${exportUrl}')">📋 복사</button>
+                    </div>
+                `;
+                
+                showStatus('URL이 성공적으로 변환되었습니다!', 'success');
+            } else {
+                showStatus('올바른 Google Docs URL이 아닙니다', 'error');
+            }
+        }
+
+        async function downloadBook() {
+            const input = document.getElementById('googleDocsUrl');
+            const url = input.value.trim();
+            
+            if (!url) {
+                showStatus('URL을 입력하세요', 'error');
+                return;
+            }
+
+            showStatus('다운로드 중... ⏳', 'info');
+
+            try {
+                // URL 변환
+                const docIdMatch = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                if (!docIdMatch) {
+                    throw new Error('올바른 Google Docs URL이 아닙니다');
+                }
+
+                const docId = docIdMatch[1];
+                const exportUrl = `https://docs.google.com/document/d/${docId}/export?format=txt`;
+
+                // CORS 프록시 사용 (직접 다운로드는 CORS 제한이 있을 수 있음)
+                const response = await fetch(exportUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP 오류: ${response.status}`);
+                }
+
+                const content = await response.text();
+                
+                if (!content || content.trim().length === 0) {
+                    throw new Error('빈 콘텐츠입니다');
+                }
+
+                // 결과 표시
+                const preview = content.substring(0, 1000);
+                document.getElementById('result').innerHTML = `
+                    <div class="success">
+                        <strong>✅ 다운로드 성공!</strong><br>
+                        <strong>크기:</strong> ${(content.length / 1024).toFixed(2)} KB<br>
+                        <strong>줄 수:</strong> ${content.split('\n').length}줄<br>
+                    </div>
+                    <div class="result">
+                        <strong>📄 미리보기 (처음 1000자):</strong><br><br>
+                        ${preview}
+                        ${content.length > 1000 ? '\n\n... (더 보기)' : ''}
+                    </div>
+                `;
+
+                showStatus('✅ 다운로드 완료! 이제 이북 리더에서 사용할 수 있습니다.', 'success');
+
+            } catch (error) {
+                console.error('다운로드 실패:', error);
+                showStatus(`❌ 다운로드 실패: ${error.message}`, 'error');
+                
+                document.getElementById('result').innerHTML = `
+                    <div class="error">
+                        <strong>오류 발생:</strong> ${error.message}<br><br>
+                        <strong>💡 해결 방법:</strong><br>
+                        1. Google Docs 문서의 공유 설정을 "링크가 있는 모든 사용자" 로 변경하세요<br>
+                        2. 브라우저의 CORS 제한으로 인해 직접 다운로드가 안 될 수 있습니다<br>
+                        3. 변환된 URL을 복사해서 이북 리더에서 사용하세요
+                    </div>
+                `;
+            }
+        }
+
+        function copyUrl(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                showStatus('✅ URL이 클립보드에 복사되었습니다!', 'success');
+            }).catch(err => {
+                showStatus('복사 실패. URL을 수동으로 복사하세요.', 'error');
+            });
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = type;
+            statusDiv.innerHTML = message;
+        }
+    </script>
+</body>
+</html>
