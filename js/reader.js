@@ -89,59 +89,188 @@ class EbookReader {
 
     setupTouchGestures() {
         let touchStartX = 0;
-        let touchEndX = 0;
         let touchStartY = 0;
-        let touchEndY = 0;
+        let currentX = 0;
+        let isDragging = false;
+        let startTime = 0;
 
+        // 터치 시작
         this.bookContent.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-            touchStartY = e.changedTouches[0].screenY;
+            if (this.isAnimating) return;
+            
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+            currentX = touchStartX;
+            isDragging = true;
+            startTime = Date.now();
+            
+            // 드래그 중에는 텍스트 선택 비활성화
+            this.bookContent.style.userSelect = 'none';
+            this.bookContent.style.webkitUserSelect = 'none';
+            
+            // 트랜지션 비활성화 (드래그 중)
+            this.bookContent.style.transition = 'none';
         }, { passive: true });
 
-        this.bookContent.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
-            touchEndY = e.changedTouches[0].screenY;
+        // 터치 이동 (실시간 드래그)
+        this.bookContent.addEventListener('touchmove', (e) => {
+            if (!isDragging || this.isAnimating) return;
             
+            currentX = e.touches[0].clientX;
+            const currentY = e.touches[0].clientY;
+            const deltaX = currentX - touchStartX;
+            const deltaY = currentY - touchStartY;
+            
+            // 수평 스와이프인 경우에만 처리
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                e.preventDefault();
+                
+                // 경계 체크 (탄성 효과)
+                let moveX = deltaX;
+                if ((this.currentPage === 0 && deltaX > 0) || 
+                    (this.currentPage >= this.totalPages - 1 && deltaX < 0)) {
+                    // 첫/마지막 페이지에서는 이동을 제한 (탄성)
+                    moveX = deltaX * 0.3;
+                }
+                
+                // 실시간으로 페이지 이동
+                this.bookContent.style.transform = `translateX(${moveX}px)`;
+            }
+        }, { passive: false });
+
+        // 터치 종료
+        this.bookContent.addEventListener('touchend', (e) => {
+            if (!isDragging) return;
+            
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
             const deltaX = touchEndX - touchStartX;
             const deltaY = touchEndY - touchStartY;
+            const deltaTime = Date.now() - startTime;
+            const velocity = Math.abs(deltaX) / deltaTime; // px/ms
             
-            // 수평 스와이프가 수직 스와이프보다 큰 경우에만 페이지 넘김
-            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-                if (deltaX > 0) {
-                    // 오른쪽으로 스와이프 → 이전 페이지
-                    this.prevPage();
+            isDragging = false;
+            
+            // 텍스트 선택 재활성화 (하이라이트를 위해)
+            setTimeout(() => {
+                this.bookContent.style.userSelect = 'text';
+                this.bookContent.style.webkitUserSelect = 'text';
+            }, 100);
+            
+            // 트랜지션 재활성화
+            this.bookContent.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+            
+            // 수평 스와이프인 경우
+            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                // 빠른 스와이프 (velocity) 또는 충분한 거리 이동
+                const threshold = 50;
+                const shouldChangePage = Math.abs(deltaX) > threshold || velocity > 0.3;
+                
+                if (shouldChangePage) {
+                    if (deltaX > 0 && this.currentPage > 0) {
+                        // 오른쪽으로 스와이프 → 이전 페이지
+                        this.prevPage();
+                    } else if (deltaX < 0 && this.currentPage < this.totalPages - 1) {
+                        // 왼쪽으로 스와이프 → 다음 페이지
+                        this.nextPage();
+                    } else {
+                        // 경계에 도달 - 원위치로 복귀
+                        this.bookContent.style.transform = 'translateX(0)';
+                    }
                 } else {
-                    // 왼쪽으로 스와이프 → 다음 페이지
-                    this.nextPage();
+                    // 이동 거리가 부족 - 원위치로 복귀
+                    this.bookContent.style.transform = 'translateX(0)';
                 }
+            } else {
+                // 수직 스와이프 - 원위치로 복귀
+                this.bookContent.style.transform = 'translateX(0)';
             }
         }, { passive: true });
 
-        // 마우스 드래그도 지원 (데스크톱)
+        // 터치 취소
+        this.bookContent.addEventListener('touchcancel', () => {
+            isDragging = false;
+            this.bookContent.style.userSelect = 'text';
+            this.bookContent.style.webkitUserSelect = 'text';
+            this.bookContent.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+            this.bookContent.style.transform = 'translateX(0)';
+        }, { passive: true });
+
+        // 마우스 드래그 (데스크톱)
         let mouseStartX = 0;
-        let isDragging = false;
+        let mouseIsDragging = false;
+        let mouseStartTime = 0;
 
         this.bookContent.addEventListener('mousedown', (e) => {
+            if (this.isAnimating) return;
+            
             mouseStartX = e.clientX;
-            isDragging = true;
+            mouseIsDragging = true;
+            mouseStartTime = Date.now();
+            this.bookContent.style.userSelect = 'none';
+            this.bookContent.style.webkitUserSelect = 'none';
+            this.bookContent.style.transition = 'none';
+            this.bookContent.style.cursor = 'grabbing';
+        });
+
+        this.bookContent.addEventListener('mousemove', (e) => {
+            if (!mouseIsDragging || this.isAnimating) return;
+            
+            const deltaX = e.clientX - mouseStartX;
+            
+            // 경계 체크
+            let moveX = deltaX;
+            if ((this.currentPage === 0 && deltaX > 0) || 
+                (this.currentPage >= this.totalPages - 1 && deltaX < 0)) {
+                moveX = deltaX * 0.3;
+            }
+            
+            this.bookContent.style.transform = `translateX(${moveX}px)`;
         });
 
         this.bookContent.addEventListener('mouseup', (e) => {
-            if (isDragging) {
-                const deltaX = e.clientX - mouseStartX;
-                if (Math.abs(deltaX) > 100) {
-                    if (deltaX > 0) {
-                        this.prevPage();
-                    } else {
-                        this.nextPage();
-                    }
+            if (!mouseIsDragging) return;
+            
+            const deltaX = e.clientX - mouseStartX;
+            const deltaTime = Date.now() - mouseStartTime;
+            const velocity = Math.abs(deltaX) / deltaTime;
+            
+            mouseIsDragging = false;
+            
+            // 텍스트 선택 재활성화
+            setTimeout(() => {
+                this.bookContent.style.userSelect = 'text';
+                this.bookContent.style.webkitUserSelect = 'text';
+            }, 100);
+            
+            this.bookContent.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+            this.bookContent.style.cursor = 'grab';
+            
+            const threshold = 80;
+            const shouldChangePage = Math.abs(deltaX) > threshold || velocity > 0.5;
+            
+            if (shouldChangePage) {
+                if (deltaX > 0 && this.currentPage > 0) {
+                    this.prevPage();
+                } else if (deltaX < 0 && this.currentPage < this.totalPages - 1) {
+                    this.nextPage();
+                } else {
+                    this.bookContent.style.transform = 'translateX(0)';
                 }
-                isDragging = false;
+            } else {
+                this.bookContent.style.transform = 'translateX(0)';
             }
         });
 
         this.bookContent.addEventListener('mouseleave', () => {
-            isDragging = false;
+            if (mouseIsDragging) {
+                mouseIsDragging = false;
+                this.bookContent.style.userSelect = 'text';
+                this.bookContent.style.webkitUserSelect = 'text';
+                this.bookContent.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+                this.bookContent.style.cursor = 'grab';
+                this.bookContent.style.transform = 'translateX(0)';
+            }
         });
     }
 
@@ -317,31 +446,38 @@ class EbookReader {
     animatePageTransition(direction) {
         if (!this.bookContent) return;
 
-        const distance = direction === 'left' ? '-30px' : '30px';
+        // 좌우 슬라이딩 효과 강화
+        const distance = direction === 'left' ? '-100%' : '100%';
         
-        // 페이드 아웃
-        this.bookContent.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
-        this.bookContent.style.opacity = '0';
+        // 현재 페이지를 왼쪽/오른쪽으로 슬라이드 아웃
+        this.bookContent.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease';
         this.bookContent.style.transform = `translateX(${distance})`;
+        this.bookContent.style.opacity = '0.5';
 
         setTimeout(() => {
+            // 새 페이지 내용 로드
             this.displayCurrentPage();
             
-            // 페이드 인
-            const oppositeDistance = direction === 'left' ? '30px' : '-30px';
+            // 반대 방향에서 슬라이드 인
+            const oppositeDistance = direction === 'left' ? '100%' : '-100%';
             this.bookContent.style.transition = 'none';
             this.bookContent.style.transform = `translateX(${oppositeDistance})`;
+            this.bookContent.style.opacity = '0.5';
             
             requestAnimationFrame(() => {
-                this.bookContent.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
-                this.bookContent.style.opacity = '1';
+                this.bookContent.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease';
                 this.bookContent.style.transform = 'translateX(0)';
+                this.bookContent.style.opacity = '1';
                 
                 setTimeout(() => {
                     this.isAnimating = false;
-                }, 150);
+                    // 하이라이트 재적용
+                    if (window.highlightManager) {
+                        window.highlightManager.applyHighlights();
+                    }
+                }, 300);
             });
-        }, 150);
+        }, 300);
     }
 
     goToPage(pageNumber) {

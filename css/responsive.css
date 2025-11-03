@@ -150,11 +150,11 @@ body {
     letter-spacing: var(--letter-spacing);
     overflow: hidden;
     height: calc(100vh - var(--header-height) - var(--nav-height));
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
     cursor: grab;
     position: relative;
+    touch-action: pan-y pinch-zoom;
+    will-change: transform;
+    /* user-select은 하이라이트 기능을 위해 제거 */
 }
 
 .book-content p {
