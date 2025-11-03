@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>모바일 최적화 이북 리더</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#007bff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="이북리더">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1 class="book-title">모바일 최적화 이북 리더</h1>
+            <div class="controls">
+                <div class="font-controls">
+                    <button id="fontDecrease" class="control-btn" title="폰트 크기 축소 (A⁻)">
+                        <i class="fas fa-font"></i>⁻
+                    </button>
+                    <button id="fontReset" class="control-btn" title="기본값으로 재설정 (⟲)">
+                        <i class="fas fa-undo"></i>
+                    </button>
+                    <button id="fontIncrease" class="control-btn" title="폰트 크기 확대 (A⁺)">
+                        <i class="fas fa-font"></i>⁺
+                    </button>
+                </div>
+                <div class="reading-progress">
+                    <span id="progressText">0%</span>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                </div>
+                <button id="bookManagerBtn" class="control-btn" title="도서 관리">
+                    <i class="fas fa-books"></i>
+                </button>
+                <button id="settingsBtn" class="control-btn" title="설정">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div id="bookContent" class="book-content">
+            </div>
+        </div>
+    </main>
+    <nav class="bottom-nav">
+        <button id="prevBtn" class="nav-btn" title="이전 페이지">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="page-indicator">
+            <span id="currentPage">1</span> / <span id="totalPages">1</span>
+        </div>
+        <button id="nextBtn" class="nav-btn" title="다음 페이지">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </nav>
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>설정</h2>
+                <button id="closeModal" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label>테마</label>
+                    <select id="themeSelect">
+                        <option value="light">라이트</option>
+                        <option value="dark">다크</option>
+                        <option value="sepia">세피아</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>줄 간격</label>
+                    <select id="lineHeightSelect">
+                        <option value="1.2">좁게</option>
+                        <option value="1.5" selected>보통</option>
+                        <option value="1.8">넓게</option>
+                        <option value="2.0">매우 넓게</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>글자 간격</label>
+                    <select id="letterSpacingSelect">
+                        <option value="normal">보통</option>
+                        <option value="0.05em">넓게</option>
+                        <option value="0.1em">매우 넓게</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="bookModal" class="modal">
+        <div class="modal-content book-modal">
+            <div class="modal-header">
+                <h2>도서 관리</h2>
+                <button id="closeBookModal" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="book-actions">
+                    <button id="downloadBookBtn" class="action-btn primary">
+                        <i class="fas fa-download"></i> 도서 다운로드
+                    </button>
+                    <button id="addTextBookBtn" class="action-btn secondary">
+                        <i class="fas fa-plus"></i> 텍스트 추가
+                    </button>
+                    <button id="storageStatsBtn" class="action-btn info">
+                        <i class="fas fa-chart-pie"></i> 저장소 통계
+                    </button>
+                </div>
+                <div id="bookList" class="book-list">
+                    <div class="empty-state">
+                        <i class="fas fa-book"></i>
+                        <p>저장된 도서가 없습니다.</p>
+                        <small>온라인 상태에서 도서를 다운로드하세요.</small>
+                    </div>
+                </div>
+                <div class="storage-info">
+                    <div class="storage-bar">
+                        <div id="storageUsed" class="storage-used"></div>
+                    </div>
+                    <div class="storage-text">
+                        <span id="storageText">0MB / 100MB (0%)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="notification" class="notification">
+        <span id="notificationText"></span>
+    </div>
+    <div id="scrollProgress" class="scroll-progress"></div>
+    <div id="installPrompt" class="install-prompt">
+        <div class="install-content">
+            <span>앱을 설치하여 오프라인에서도 도서를 읽으세요! 📚</span>
+            <div class="install-buttons">
+                <button id="installBtn" class="install-btn">설치</button>
+                <button id="dismissInstall" class="dismiss-btn">닫기</button>
+            </div>
+        </div>
+    </div>
+    <script src="js/app.js"></script>
+    <script src="js/reader.js"></script>
+    <script src="js/responsive.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/download.js"></script>
+    <script src="js/book-manager.js"></script>
+    <script src="js/pwa.js"></script>
+</body>
+</html>
