@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ebook-reader-v2';
+const CACHE_NAME = 'ebook-reader-v3';
 const urlsToCache = [
   './',
   './index.html',
@@ -14,7 +14,8 @@ const urlsToCache = [
   './js/pwa.js',
   './icons/icon-192.svg',
   './icons/icon-512.svg',
-  './content.txt'
+  './content.txt',
+  './jusaengjeon.txt'
 ];
 
 self.addEventListener('install', (event) => {

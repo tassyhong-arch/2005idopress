@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>샘플 도서 테스트</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #007bff; }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #218838;
+        }
+        button.info {
+            background: #17a2b8;
+        }
+        button.info:hover {
+            background: #138496;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            display: none;
+        }
+        #result.show {
+            display: block;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 샘플 도서 테스트</h1>
+        
+        <h2>파일 확인</h2>
+        <button onclick="checkFile()">📄 jusaengjeon.txt 파일 확인</button>
+        <button onclick="loadSample()" class="info">📚 샘플 로드 테스트</button>
+        
+        <div id="result"></div>
+        
+        <h2>📖 사용 방법</h2>
+        <ol>
+            <li><strong>메인 앱</strong>으로 이동</li>
+            <li><strong>📚 도서</strong> 버튼 클릭</li>
+            <li><strong>📚 샘플 도서 (주생전)</strong> 버튼 클릭</li>
+            <li>자동으로 도서가 추가됩니다!</li>
+        </ol>
+        
+        <a href="./" style="display: inline-block; margin-top: 20px; padding: 15px 30px; background: #007bff; color: white; text-decoration: none; border-radius: 8px;">
+            🏠 메인 앱으로 이동
+        </a>
+    </div>
+
+    <script>
+        async function checkFile() {
+            const result = document.getElementById('result');
+            result.className = 'show';
+            result.innerHTML = '⏳ 파일 확인 중...';
+            
+            try {
+                const response = await fetch('./jusaengjeon.txt');
+                if (!response.ok) {
+                    throw new Error('파일을 찾을 수 없습니다');
+                }
+                
+                const text = await response.text();
+                const size = new Blob([text]).size;
+                const preview = text.substring(0, 500);
+                
+                result.innerHTML = `
+                    <h3>✅ 파일 확인 성공!</h3>
+                    <p><strong>크기:</strong> ${(size / 1024).toFixed(2)} KB</p>
+                    <p><strong>글자 수:</strong> ${text.length.toLocaleString()}</p>
+                    <p><strong>미리보기:</strong></p>
+                    <pre>${preview}...</pre>
+                `;
+            } catch (error) {
+                result.innerHTML = `
+                    <h3 style="color: red;">❌ 오류 발생</h3>
+                    <p>${error.message}</p>
+                `;
+            }
+        }
+        
+        async function loadSample() {
+            const result = document.getElementById('result');
+            result.className = 'show';
+            result.innerHTML = '⏳ 샘플 로드 중...';
+            
+            try {
+                const response = await fetch('./jusaengjeon.txt');
+                if (!response.ok) {
+                    throw new Error('파일을 찾을 수 없습니다');
+                }
+                
+                const text = await response.text();
+                
+                result.innerHTML = `
+                    <h3>✅ 로드 성공!</h3>
+                    <p>이제 메인 앱에서 이 내용을 IndexedDB에 저장할 수 있습니다.</p>
+                    <p><strong>제목:</strong> 주생전 (周生傳)</p>
+                    <p><strong>크기:</strong> ${(new Blob([text]).size / 1024).toFixed(2)} KB</p>
+                    <p><strong>첫 줄:</strong> ${text.split('\n')[0]}</p>
+                `;
+            } catch (error) {
+                result.innerHTML = `
+                    <h3 style="color: red;">❌ 오류 발생</h3>
+                    <p>${error.message}</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>
