@@ -990,3 +990,387 @@ body.offline .header {
         font-size: 13px;
     }
 }
+
+/* 북마크 기능 스타일 */
+.bookmark-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--modal-overlay);
+    z-index: 250;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.bookmark-container {
+    background-color: var(--color-bg);
+    border-radius: var(--border-radius);
+    max-width: 700px;
+    width: 100%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow);
+}
+
+.bookmark-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.bookmark-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    color: var(--color-text);
+}
+
+.bookmark-actions {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--color-border);
+    background-color: var(--color-header);
+}
+
+.bookmark-action-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.bookmark-action-btn.primary {
+    background-color: var(--color-accent);
+    color: white;
+}
+
+.bookmark-action-btn.primary:hover {
+    background-color: var(--color-hover);
+}
+
+.bookmark-list-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 20px;
+}
+
+.bookmark-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.bookmark-item {
+    background-color: var(--color-header);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: 16px;
+    transition: var(--transition);
+}
+
+.bookmark-item:hover {
+    box-shadow: var(--shadow);
+    transform: translateY(-2px);
+}
+
+.bookmark-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.bookmark-item-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text);
+    flex: 1;
+}
+
+.bookmark-item-title i {
+    color: var(--color-accent);
+}
+
+.bookmark-item-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.bookmark-edit-btn,
+.bookmark-delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    transition: var(--transition);
+    color: #666;
+}
+
+.bookmark-edit-btn:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+    color: var(--color-accent);
+}
+
+.bookmark-delete-btn:hover {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.bookmark-item-body {
+    margin-bottom: 12px;
+}
+
+.bookmark-item-page,
+.bookmark-item-date {
+    font-size: 12px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+[data-theme="dark"] .bookmark-item-page,
+[data-theme="dark"] .bookmark-item-date {
+    color: #999;
+}
+
+.bookmark-item-note {
+    font-size: 14px;
+    color: var(--color-text);
+    background-color: rgba(0, 123, 255, 0.05);
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin: 8px 0;
+    display: flex;
+    gap: 8px;
+    line-height: 1.5;
+}
+
+.bookmark-item-note i {
+    color: var(--color-accent);
+    margin-top: 2px;
+}
+
+.bookmark-goto-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: var(--color-accent);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.bookmark-goto-btn:hover {
+    background-color: var(--color-hover);
+}
+
+.empty-bookmark-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: #666;
+}
+
+[data-theme="dark"] .empty-bookmark-state {
+    color: #999;
+}
+
+.empty-bookmark-state i {
+    font-size: 64px;
+    margin-bottom: 20px;
+    opacity: 0.3;
+}
+
+.empty-bookmark-state p {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.empty-bookmark-state small {
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+/* 북마크 모달 */
+.bookmark-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--modal-overlay);
+    z-index: 300;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.bookmark-modal-content {
+    background-color: var(--color-bg);
+    border-radius: var(--border-radius);
+    max-width: 500px;
+    width: 100%;
+    box-shadow: var(--shadow);
+}
+
+.bookmark-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.bookmark-modal-header h3 {
+    font-size: 18px;
+    color: var(--color-text);
+}
+
+.bookmark-modal-body {
+    padding: 20px;
+}
+
+.bookmark-form-group {
+    margin-bottom: 16px;
+}
+
+.bookmark-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text);
+}
+
+.bookmark-input,
+.bookmark-textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.bookmark-input:focus,
+.bookmark-textarea:focus {
+    outline: none;
+    border-color: var(--color-accent);
+}
+
+.bookmark-textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.bookmark-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 20px;
+    border-top: 1px solid var(--color-border);
+}
+
+.bookmark-modal-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.bookmark-modal-btn.primary {
+    background-color: var(--color-accent);
+    color: white;
+}
+
+.bookmark-modal-btn.primary:hover {
+    background-color: var(--color-hover);
+}
+
+.bookmark-modal-btn.secondary {
+    background-color: var(--color-border);
+    color: var(--color-text);
+}
+
+.bookmark-modal-btn.secondary:hover {
+    background-color: #d4d4d4;
+}
+
+/* 북마크 버튼 스타일 */
+.bookmark-btn {
+    background-color: #ff9800;
+}
+
+.bookmark-btn:hover {
+    background-color: #f57c00;
+}
+
+/* 모바일 최적화 */
+@media (max-width: 480px) {
+    .bookmark-container {
+        max-height: 90vh;
+    }
+
+    .bookmark-header {
+        padding: 16px;
+    }
+
+    .bookmark-header h2 {
+        font-size: 18px;
+    }
+
+    .bookmark-actions {
+        padding: 12px 16px;
+    }
+
+    .bookmark-list-container {
+        padding: 12px 16px;
+    }
+
+    .bookmark-item {
+        padding: 12px;
+    }
+
+    .bookmark-item-title {
+        font-size: 15px;
+    }
+
+    .bookmark-modal-content {
+        max-width: 100%;
+    }
+}

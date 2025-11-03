@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ebook-reader-v6';
+const CACHE_NAME = 'ebook-reader-v7';
 const urlsToCache = [
   './',
   './index.html',
@@ -12,6 +12,7 @@ const urlsToCache = [
   './js/download.js',
   './js/book-manager.js',
   './js/search.js',
+  './js/bookmark.js',
   './js/pwa.js',
   './icons/icon-192.svg',
   './icons/icon-512.svg',
