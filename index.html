@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net; script-src 'self'; img-src 'self' data:; connect-src 'self';">
     <title>모바일 최적화 이북 리더</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/responsive.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" integrity="sha384-iw3OoTErCYJJB9mCa8LNS2hbsQ7M3C0EpIsO/H5+EGAkPGc6rk+V8i04oW/K5xq0" crossorigin="anonymous">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#007bff">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,14 +21,14 @@
             <h1 class="book-title">모바일 최적화 이북 리더</h1>
             <div class="controls">
                 <div class="font-controls">
-                    <button id="fontDecrease" class="control-btn" title="폰트 크기 축소 (A⁻)">
-                        <i class="fas fa-font"></i>⁻
+                    <button id="fontDecrease" class="control-btn" title="폰트 크기 축소 (A⁻)" aria-label="폰트 크기 축소">
+                        <i class="fas fa-font" aria-hidden="true"></i>⁻
                     </button>
-                    <button id="fontReset" class="control-btn" title="기본값으로 재설정 (⟲)">
-                        <i class="fas fa-undo"></i>
+                    <button id="fontReset" class="control-btn" title="기본값으로 재설정 (⟲)" aria-label="폰트 크기 재설정">
+                        <i class="fas fa-undo" aria-hidden="true"></i>
                     </button>
-                    <button id="fontIncrease" class="control-btn" title="폰트 크기 확대 (A⁺)">
-                        <i class="fas fa-font"></i>⁺
+                    <button id="fontIncrease" class="control-btn" title="폰트 크기 확대 (A⁺)" aria-label="폰트 크기 확대">
+                        <i class="fas fa-font" aria-hidden="true"></i>⁺
                     </button>
                 </div>
                 <div class="reading-progress">
@@ -36,43 +37,43 @@
                         <div id="progressFill" class="progress-fill"></div>
                     </div>
                 </div>
-                <button id="bookManagerBtn" class="control-btn" title="도서 관리">
-                    <i class="fas fa-books"></i>
+                <button id="bookManagerBtn" class="control-btn" title="도서 관리" aria-label="도서 관리">
+                    <i class="fas fa-books" aria-hidden="true"></i>
                 </button>
-                <button id="settingsBtn" class="control-btn" title="설정">
-                    <i class="fas fa-cog"></i>
+                <button id="settingsBtn" class="control-btn" title="설정" aria-label="설정">
+                    <i class="fas fa-cog" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
     </header>
     <main class="main-content">
         <div class="content-wrapper">
-            <div id="bookContent" class="book-content">
+            <div id="bookContent" class="book-content" role="article">
             </div>
         </div>
     </main>
-    <nav class="bottom-nav">
-        <button id="prevBtn" class="nav-btn" title="이전 페이지">
-            <i class="fas fa-chevron-left"></i>
+    <nav class="bottom-nav" role="navigation" aria-label="페이지 네비게이션">
+        <button id="prevBtn" class="nav-btn" title="이전 페이지" aria-label="이전 페이지">
+            <i class="fas fa-chevron-left" aria-hidden="true"></i>
         </button>
-        <div class="page-indicator">
+        <div class="page-indicator" role="status" aria-live="polite">
             <span id="currentPage">1</span> / <span id="totalPages">1</span>
         </div>
-        <button id="nextBtn" class="nav-btn" title="다음 페이지">
-            <i class="fas fa-chevron-right"></i>
+        <button id="nextBtn" class="nav-btn" title="다음 페이지" aria-label="다음 페이지">
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
         </button>
     </nav>
-    <div id="settingsModal" class="modal">
+    <div id="settingsModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>설정</h2>
-                <button id="closeModal" class="close-btn">
-                    <i class="fas fa-times"></i>
+                <h2 id="settingsTitle">설정</h2>
+                <button id="closeModal" class="close-btn" aria-label="설정 닫기">
+                    <i class="fas fa-times" aria-hidden="true"></i>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="setting-group">
-                    <label>테마</label>
+                    <label for="themeSelect">테마</label>
                     <select id="themeSelect">
                         <option value="light">라이트</option>
                         <option value="dark">다크</option>
@@ -80,7 +81,7 @@
                     </select>
                 </div>
                 <div class="setting-group">
-                    <label>줄 간격</label>
+                    <label for="lineHeightSelect">줄 간격</label>
                     <select id="lineHeightSelect">
                         <option value="1.2">좁게</option>
                         <option value="1.5" selected>보통</option>
@@ -89,7 +90,7 @@
                     </select>
                 </div>
                 <div class="setting-group">
-                    <label>글자 간격</label>
+                    <label for="letterSpacingSelect">글자 간격</label>
                     <select id="letterSpacingSelect">
                         <option value="normal">보통</option>
                         <option value="0.05em">넓게</option>
@@ -99,29 +100,29 @@
             </div>
         </div>
     </div>
-    <div id="bookModal" class="modal">
+    <div id="bookModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="bookModalTitle">
         <div class="modal-content book-modal">
             <div class="modal-header">
-                <h2>도서 관리</h2>
-                <button id="closeBookModal" class="close-btn">
-                    <i class="fas fa-times"></i>
+                <h2 id="bookModalTitle">도서 관리</h2>
+                <button id="closeBookModal" class="close-btn" aria-label="도서 관리 닫기">
+                    <i class="fas fa-times" aria-hidden="true"></i>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="book-actions">
                     <button id="downloadBookBtn" class="action-btn primary">
-                        <i class="fas fa-download"></i> 도서 다운로드
+                        <i class="fas fa-download" aria-hidden="true"></i> 도서 다운로드
                     </button>
                     <button id="addTextBookBtn" class="action-btn secondary">
-                        <i class="fas fa-plus"></i> 텍스트 추가
+                        <i class="fas fa-plus" aria-hidden="true"></i> 텍스트 추가
                     </button>
                     <button id="storageStatsBtn" class="action-btn info">
-                        <i class="fas fa-chart-pie"></i> 저장소 통계
+                        <i class="fas fa-chart-pie" aria-hidden="true"></i> 저장소 통계
                     </button>
                 </div>
                 <div id="bookList" class="book-list">
                     <div class="empty-state">
-                        <i class="fas fa-book"></i>
+                        <i class="fas fa-book" aria-hidden="true"></i>
                         <p>저장된 도서가 없습니다.</p>
                         <small>온라인 상태에서 도서를 다운로드하세요.</small>
                     </div>
@@ -137,10 +138,10 @@
             </div>
         </div>
     </div>
-    <div id="notification" class="notification">
+    <div id="notification" class="notification" role="alert" aria-live="assertive">
         <span id="notificationText"></span>
     </div>
-    <div id="scrollProgress" class="scroll-progress"></div>
+    <div id="scrollProgress" class="scroll-progress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
     <div id="installPrompt" class="install-prompt">
         <div class="install-content">
             <span>앱을 설치하여 오프라인에서도 도서를 읽으세요! 📚</span>
