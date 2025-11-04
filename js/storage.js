@@ -42,6 +42,10 @@ class BookStorage {
     }
 
     async saveBook(title, content, metadata = {}) {
+        if (!this.db) {
+            throw new Error('Database not initialized');
+        }
+
         try {
             const book = {
                 title,
@@ -74,6 +78,7 @@ class BookStorage {
                     resolve(request.result);
                 };
                 request.onerror = () => reject(request.error);
+                transaction.onerror = () => reject(transaction.error);
             });
         } catch (error) {
             console.error('도서 저장 실패:', error);
@@ -85,25 +90,53 @@ class BookStorage {
     }
 
     async getBook(id) {
-        const transaction = this.db.transaction([this.storeName], 'readonly');
-        const objectStore = transaction.objectStore(this.storeName);
-        const request = objectStore.get(id);
+        if (!this.db) {
+            console.warn('Database not initialized');
+            return null;
+        }
 
-        return new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
-        });
+        try {
+            const transaction = this.db.transaction([this.storeName], 'readonly');
+            const objectStore = transaction.objectStore(this.storeName);
+            const request = objectStore.get(id);
+
+            return new Promise((resolve, reject) => {
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+                transaction.onerror = () => reject(transaction.error);
+            });
+        } catch (error) {
+            console.error('getBook failed:', error);
+            return null;
+        }
     }
 
     async getAllBooks() {
-        const transaction = this.db.transaction([this.storeName], 'readonly');
-        const objectStore = transaction.objectStore(this.storeName);
-        const request = objectStore.getAll();
+        if (!this.db) {
+            console.warn('Database not initialized');
+            return [];
+        }
 
-        return new Promise((resolve, reject) => {
-            request.onsuccess = () => resolve(request.result);
-            request.onerror = () => reject(request.error);
-        });
+        try {
+            const transaction = this.db.transaction([this.storeName], 'readonly');
+            const objectStore = transaction.objectStore(this.storeName);
+            const request = objectStore.getAll();
+
+            return new Promise((resolve, reject) => {
+                request.onsuccess = () => resolve(request.result || []);
+                request.onerror = () => {
+                    console.error('getAllBooks error:', request.error);
+                    reject(request.error);
+                };
+                transaction.onerror = () => {
+                    console.error('transaction error:', transaction.error);
+                    reject(transaction.error);
+                };
+            });
+        } catch (error) {
+            console.error('getAllBooks failed:', error);
+            return [];
+        }
     }
 
     async deleteBook(id) {

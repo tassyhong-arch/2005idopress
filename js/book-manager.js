@@ -108,50 +108,113 @@ class BookManager {
     createBookCard(book) {
         const { id, title, metadata } = book;
         const size = metadata?.size ? this.formatBytes(metadata.size) : '알 수 없음';
-        const addedAt = metadata?.addedAt ? new Date(metadata.addedAt).toLocaleDateString() : '알 수 없음';
-        const lastRead = metadata?.lastRead ? new Date(metadata.lastRead).toLocaleDateString() : '읽지 않음';
+        const addedAt = metadata?.addedAt ? new Date(metadata.addedAt).toLocaleDateString('ko-KR', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        }) : '알 수 없음';
+        const lastRead = metadata?.lastRead ? new Date(metadata.lastRead).toLocaleDateString('ko-KR', { 
+            month: 'short', 
+            day: 'numeric' 
+        }) : '읽지 않음';
         const progress = this.getBookProgress(title);
+        const author = metadata?.author || '';
+        const description = metadata?.description || '';
+
+        // 도서 표지 색상 생성 (제목 기반)
+        const coverColor = this.generateCoverColor(title);
+        const coverGradient = `linear-gradient(135deg, ${coverColor}, ${this.adjustColor(coverColor, -20)})`;
 
         return `
-            <div class="book-card" data-book-id="${id}">
-                <div class="book-card-header">
-                    <h3 class="book-card-title">${this.escapeHtml(title)}</h3>
-                    <button class="book-delete-btn" data-book-id="${id}" title="삭제">
-                        <i class="fas fa-trash"></i>
+            <div class="library-book-card" data-book-id="${id}">
+                <div class="book-cover" style="background: ${coverGradient};">
+                    <div class="book-cover-overlay">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    ${progress > 0 ? `
+                        <div class="book-progress-badge">${progress}%</div>
+                    ` : ''}
+                    <button class="book-delete-btn-mini" data-book-id="${id}" title="삭제">
+                        <i class="fas fa-times"></i>
                     </button>
                 </div>
-                <div class="book-card-body">
-                    <div class="book-info">
-                        <span><i class="fas fa-file-alt"></i> ${size}</span>
-                        <span><i class="fas fa-calendar-plus"></i> ${addedAt}</span>
+                <div class="book-details">
+                    <h3 class="book-title-card" title="${this.escapeHtml(title)}">
+                        ${this.escapeHtml(title)}
+                    </h3>
+                    ${author ? `<p class="book-author">${this.escapeHtml(author)}</p>` : ''}
+                    ${description ? `<p class="book-description">${this.escapeHtml(description).substring(0, 60)}${description.length > 60 ? '...' : ''}</p>` : ''}
+                    <div class="book-meta">
+                        <span class="meta-item">
+                            <i class="fas fa-file-alt"></i> ${size}
+                        </span>
+                        <span class="meta-item">
+                            <i class="fas fa-clock"></i> ${lastRead}
+                        </span>
                     </div>
-                    <div class="book-info">
-                        <span><i class="fas fa-book-reader"></i> ${lastRead}</span>
-                        ${progress > 0 ? `<span><i class="fas fa-chart-line"></i> ${progress}%</span>` : ''}
-                    </div>
+                    <button class="library-read-btn" data-book-id="${id}">
+                        <i class="fas fa-book-open"></i>
+                        <span>읽기</span>
+                    </button>
                 </div>
-                <button class="book-open-btn" data-book-id="${id}">
-                    <i class="fas fa-book-open"></i> 읽기
-                </button>
             </div>
         `;
     }
 
+    // 제목 기반으로 표지 색상 생성
+    generateCoverColor(title) {
+        let hash = 0;
+        for (let i = 0; i < title.length; i++) {
+            hash = title.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        
+        const colors = [
+            '#667eea', '#764ba2', '#f093fb', '#4facfe',
+            '#43e97b', '#fa709a', '#fee140', '#30cfd0',
+            '#a8edea', '#fed6e3', '#c471f5', '#fa71cd',
+            '#6a11cb', '#2575fc', '#f857a6', '#ff6a88'
+        ];
+        
+        return colors[Math.abs(hash) % colors.length];
+    }
+
+    // 색상 밝기 조정
+    adjustColor(color, amount) {
+        const num = parseInt(color.replace('#', ''), 16);
+        const r = Math.max(0, Math.min(255, (num >> 16) + amount));
+        const g = Math.max(0, Math.min(255, ((num >> 8) & 0x00FF) + amount));
+        const b = Math.max(0, Math.min(255, (num & 0x0000FF) + amount));
+        return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
+    }
+
     setupBookCardListeners() {
-        // 읽기 버튼
-        document.querySelectorAll('.book-open-btn').forEach(btn => {
+        // 읽기 버튼 (새 클래스명)
+        document.querySelectorAll('.library-read-btn, .book-open-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
                 const bookId = parseInt(e.currentTarget.dataset.bookId);
                 await this.openBook(bookId);
             });
         });
 
-        // 삭제 버튼
-        document.querySelectorAll('.book-delete-btn').forEach(btn => {
+        // 삭제 버튼 (새 클래스명 포함)
+        document.querySelectorAll('.book-delete-btn, .book-delete-btn-mini').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 const bookId = parseInt(e.currentTarget.dataset.bookId);
                 await this.deleteBook(bookId);
+            });
+        });
+
+        // 카드 클릭 시 읽기
+        document.querySelectorAll('.library-book-card, .book-card').forEach(card => {
+            card.addEventListener('click', async (e) => {
+                // 삭제 버튼 클릭은 제외
+                if (e.target.closest('.book-delete-btn, .book-delete-btn-mini')) {
+                    return;
+                }
+                const bookId = parseInt(card.dataset.bookId);
+                await this.openBook(bookId);
             });
         });
     }
