@@ -73,9 +73,12 @@ class BookManager {
             if (this.currentBooks.length === 0) {
                 bookListDiv.innerHTML = `
                     <div class="empty-state">
-                        <i class="fas fa-book"></i>
-                        <p>저장된 도서가 없습니다.</p>
-                        <small>온라인 상태에서 도서를 다운로드하세요.</small>
+                        <i class="fas fa-book-open"></i>
+                        <p><strong>도서관이 비어있습니다</strong></p>
+                        <small>
+                            📥 <strong>"도서 다운로드"</strong> 또는 <strong>"텍스트 추가"</strong>로 도서를 추가하세요<br>
+                            📚 <strong>"샘플 도서"</strong> 버튼으로 빠르게 시작할 수 있습니다
+                        </small>
                     </div>
                 `;
                 return;

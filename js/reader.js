@@ -285,6 +285,14 @@ class EbookReader {
     }
 
     loadContent(text, title = '이북') {
+        if (!text || typeof text !== 'string') {
+            console.error('Invalid content provided to loadContent');
+            if (window.app) {
+                window.app.showNotification('도서 내용을 불러올 수 없습니다', 'error');
+            }
+            return;
+        }
+
         this.content = text;
         this.bookTitle = title;
         

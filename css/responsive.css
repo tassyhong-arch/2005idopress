@@ -2249,6 +2249,11 @@ body.offline .header {
     text-align: center;
     padding: 60px 20px;
     color: #666;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
 }
 
 [data-theme="dark"] .empty-state {
@@ -2256,22 +2261,37 @@ body.offline .header {
 }
 
 .empty-state i {
-    font-size: 64px;
-    margin-bottom: 20px;
-    opacity: 0.3;
+    font-size: 72px;
+    margin-bottom: 24px;
+    opacity: 0.4;
+    color: var(--color-accent);
 }
 
 .empty-state p {
     font-size: 18px;
     font-weight: 600;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    color: var(--color-text);
+}
+
+.empty-state strong {
+    color: var(--color-accent);
 }
 
 .empty-state small {
     font-size: 14px;
-    opacity: 0.7;
+    opacity: 0.8;
     display: block;
-    line-height: 1.6;
+    line-height: 1.8;
+    max-width: 400px;
+}
+
+.empty-state.error i {
+    color: #dc3545;
+}
+
+.empty-state.error p {
+    color: #dc3545;
 }
 
 /* ====================================

@@ -3,14 +3,34 @@ class EbookApp {
     constructor() {
         this.currentBook = null;
         this.settings = this.loadSettings();
+        this.initTimeout = null;
         this.init();
     }
 
-    init() {
+    async init() {
+        // 다른 모듈이 로드될 때까지 대기
+        await this.waitForModules();
+        
         this.applySettings();
         this.setupEventListeners();
         this.loadLastBook();
         this.showNotification('앱이 준비되었습니다! 📚');
+    }
+
+    async waitForModules() {
+        // 필수 모듈이 로드될 때까지 대기 (최대 5초)
+        const maxWait = 5000;
+        const startTime = Date.now();
+        
+        while (Date.now() - startTime < maxWait) {
+            if (window.bookStorage && window.reader && window.bookDownloader && window.bookManager) {
+                console.log('모든 모듈 로드 완료');
+                return;
+            }
+            await new Promise(resolve => setTimeout(resolve, 50));
+        }
+        
+        console.warn('일부 모듈 로드 대기 시간 초과');
     }
 
     loadSettings() {
@@ -237,6 +257,22 @@ class EbookApp {
         alert(helpText);
     }
 }
+
+// 전역 에러 핸들러
+window.addEventListener('error', (event) => {
+    console.error('전역 에러:', event.error);
+    if (window.app) {
+        window.app.showNotification('예기치 않은 오류가 발생했습니다', 'error');
+    }
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+    console.error('처리되지 않은 Promise 거부:', event.reason);
+    if (window.app) {
+        window.app.showNotification('작업을 완료할 수 없습니다', 'error');
+    }
+    event.preventDefault();
+});
 
 // 앱 초기화
 document.addEventListener('DOMContentLoaded', () => {
