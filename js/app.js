@@ -152,12 +152,19 @@ class EbookApp {
             this.settings.fontSize = newSize;
             this.saveSettings();
             this.applySettings();
-            this.showNotification(`폰트 크기: ${newSize}px`);
+            
+            // 시각적 피드백 개선
+            const icon = delta > 0 ? '🔼' : '🔽';
+            this.showNotification(`${icon} 폰트 크기: ${newSize}px`, 'info');
             
             // 페이지 재계산
             if (window.reader) {
                 window.reader.recalculatePages();
             }
+        } else {
+            // 한계에 도달했을 때
+            const limitMsg = newSize === 12 ? '최소 크기입니다' : '최대 크기입니다';
+            this.showNotification(`⚠️ ${limitMsg} (${newSize}px)`, 'warning');
         }
     }
 
@@ -165,7 +172,7 @@ class EbookApp {
         this.settings.fontSize = 16;
         this.saveSettings();
         this.applySettings();
-        this.showNotification('폰트 크기가 초기화되었습니다');
+        this.showNotification('🔄 폰트 크기가 초기화되었습니다 (16px)', 'success');
         
         if (window.reader) {
             window.reader.recalculatePages();

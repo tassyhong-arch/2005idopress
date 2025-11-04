@@ -93,6 +93,7 @@ class EbookReader {
         let currentX = 0;
         let isDragging = false;
         let startTime = 0;
+        let hasMovedEnough = false;
 
         // 터치 시작
         this.bookContent.addEventListener('touchstart', (e) => {
@@ -102,14 +103,11 @@ class EbookReader {
             touchStartY = e.touches[0].clientY;
             currentX = touchStartX;
             isDragging = true;
+            hasMovedEnough = false;
             startTime = Date.now();
             
-            // 드래그 중에는 텍스트 선택 비활성화
-            this.bookContent.style.userSelect = 'none';
-            this.bookContent.style.webkitUserSelect = 'none';
-            
-            // 트랜지션 비활성화 (드래그 중)
-            this.bookContent.style.transition = 'none';
+            // 처음에는 텍스트 선택 허용 (롱프레스를 위해)
+            // 스와이프가 확실해지면 비활성화
         }, { passive: true });
 
         // 터치 이동 (실시간 드래그)
@@ -121,8 +119,20 @@ class EbookReader {
             const deltaX = currentX - touchStartX;
             const deltaY = currentY - touchStartY;
             
+            // 스와이프 방향 감지 (10px 이상 움직였을 때)
+            if (!hasMovedEnough && (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10)) {
+                hasMovedEnough = true;
+                
+                // 수평 스와이프인 경우에만 텍스트 선택 비활성화
+                if (Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
+                    this.bookContent.style.userSelect = 'none';
+                    this.bookContent.style.webkitUserSelect = 'none';
+                    this.bookContent.style.transition = 'none';
+                }
+            }
+            
             // 수평 스와이프인 경우에만 처리
-            if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            if (hasMovedEnough && Math.abs(deltaX) > Math.abs(deltaY) * 1.5) {
                 e.preventDefault();
                 
                 // 경계 체크 (탄성 효과)
