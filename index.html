@@ -18,43 +18,19 @@
     <meta name="description" content="인터넷 없이도 도서를 읽을 수 있는 PWA 이북 리더">
 </head>
 <body>
-    <header class="header">
+    <!-- 교보문고 스타일 헤더 (탭 시 숨김) -->
+    <header class="header" id="readerHeader">
         <div class="header-content">
-            <h1 class="book-title">모바일 최적화 이북 리더</h1>
-            <div class="controls">
-                <div class="font-controls">
-                    <button id="fontDecrease" class="control-btn" title="폰트 크기 축소 (A⁻)">
-                        <i class="fas fa-font"></i>⁻
-                    </button>
-                    <button id="fontReset" class="control-btn" title="기본값으로 재설정 (⟲)">
-                        <i class="fas fa-undo"></i>
-                    </button>
-                    <button id="fontIncrease" class="control-btn" title="폰트 크기 확대 (A⁺)">
-                        <i class="fas fa-font"></i>⁺
-                    </button>
-                </div>
-                <div class="reading-progress">
-                    <span id="progressText">0%</span>
-                    <div class="progress-bar">
-                        <div id="progressFill" class="progress-fill"></div>
-                    </div>
-                </div>
-                <button id="ttsBtn" class="control-btn tts-btn" title="음성 듣기 (TTS)">
-                    <i class="fas fa-headphones"></i>
-                    <span class="btn-text">듣기</span>
-                </button>
-                <button id="bookManagerBtn" class="control-btn book-manager-btn" title="도서 관리">
-                    <i class="fas fa-book"></i>
-                    <span class="btn-text">도서</span>
-                </button>
-                <button id="settingsBtn" class="control-btn settings-btn" title="설정">
-                    <i class="fas fa-cog"></i>
-                    <span class="btn-text">설정</span>
-                </button>
-                <button id="helpBtn" class="control-btn help-btn" title="도움말">
-                    <i class="fas fa-question-circle"></i>
-                </button>
-            </div>
+            <button id="backBtn" class="header-icon-btn" title="도서 목록으로">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1 class="book-title" id="headerBookTitle">이북 리더</h1>
+            <button id="menuBtn" class="header-icon-btn" title="메뉴">
+                <i class="fas fa-ellipsis-v"></i>
+            </button>
+        </div>
+        <div class="reading-progress-bar">
+            <div id="headerProgressFill" class="progress-fill"></div>
         </div>
     </header>
     <main class="main-content">
@@ -63,21 +39,106 @@
             </div>
         </div>
     </main>
-    <nav class="bottom-nav">
-        <button id="prevBtn" class="nav-btn" title="이전 페이지">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <div class="page-indicator">
-            <span id="currentPage">1</span> / <span id="totalPages">1</span>
+    <!-- 교보문고 스타일 하단 플로팅 메뉴 (탭 시 숨김) -->
+    <nav class="bottom-nav" id="readerBottomNav">
+        <!-- 페이지 슬라이더 -->
+        <div class="page-slider-container">
+            <div class="page-slider-info">
+                <span id="currentPage">1</span> / <span id="totalPages">1</span>
+                <span id="progressText" class="progress-percentage">0%</span>
+            </div>
+            <input type="range" id="pageSlider" class="page-slider" min="1" max="1" value="1" step="1">
         </div>
-        <button id="nextBtn" class="nav-btn" title="다음 페이지">
-            <i class="fas fa-chevron-right"></i>
-        </button>
+        
+        <!-- 하단 툴바 -->
+        <div class="bottom-toolbar">
+            <button id="bottomTTSBtn" class="toolbar-btn" title="듣기">
+                <i class="fas fa-headphones"></i>
+                <span>듣기</span>
+            </button>
+            <button id="bottomBookmarkBtn" class="toolbar-btn" title="북마크">
+                <i class="fas fa-bookmark"></i>
+                <span>북마크</span>
+            </button>
+            <button id="bottomHighlightBtn" class="toolbar-btn" title="하이라이트">
+                <i class="fas fa-highlighter"></i>
+                <span>표시</span>
+            </button>
+            <button id="bottomSearchBtn" class="toolbar-btn" title="검색">
+                <i class="fas fa-search"></i>
+                <span>검색</span>
+            </button>
+            <button id="bottomSettingsBtn" class="toolbar-btn" title="설정">
+                <i class="fas fa-cog"></i>
+                <span>설정</span>
+            </button>
+        </div>
     </nav>
-    <div id="settingsModal" class="modal">
+    <!-- 교보문고 스타일 빠른 설정 팝업 -->
+    <div id="quickSettingsPanel" class="quick-settings-panel">
+        <div class="quick-settings-content">
+            <!-- 폰트 크기 -->
+            <div class="quick-setting-section">
+                <label class="quick-setting-label">
+                    <i class="fas fa-font"></i> 글자 크기
+                </label>
+                <div class="font-size-control">
+                    <button id="qsFontDecrease" class="quick-btn" title="작게">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <span id="qsFontSize" class="font-size-value">16px</span>
+                    <button id="qsFontIncrease" class="quick-btn" title="크게">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 테마 -->
+            <div class="quick-setting-section">
+                <label class="quick-setting-label">
+                    <i class="fas fa-palette"></i> 테마
+                </label>
+                <div class="theme-buttons">
+                    <button class="theme-btn active" data-theme="light">
+                        <div class="theme-preview light-theme"></div>
+                        <span>밝게</span>
+                    </button>
+                    <button class="theme-btn" data-theme="dark">
+                        <div class="theme-preview dark-theme"></div>
+                        <span>어둡게</span>
+                    </button>
+                    <button class="theme-btn" data-theme="sepia">
+                        <div class="theme-preview sepia-theme"></div>
+                        <span>세피아</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 줄 간격 -->
+            <div class="quick-setting-section">
+                <label class="quick-setting-label">
+                    <i class="fas fa-align-justify"></i> 줄 간격
+                </label>
+                <div class="spacing-control">
+                    <button class="spacing-btn" data-spacing="1.2">좁게</button>
+                    <button class="spacing-btn active" data-spacing="1.5">보통</button>
+                    <button class="spacing-btn" data-spacing="1.8">넓게</button>
+                    <button class="spacing-btn" data-spacing="2.0">매우 넓게</button>
+                </div>
+            </div>
+
+            <!-- 도서 관리 버튼 -->
+            <button id="qsBookManager" class="quick-action-btn">
+                <i class="fas fa-book"></i> 도서 관리
+            </button>
+        </div>
+    </div>
+
+    <!-- 기존 설정 모달 (상세 설정용) -->
+    <div id="settingsModal" class="modal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>설정</h2>
+                <h2>상세 설정</h2>
                 <button id="closeModal" class="close-btn">
                     <i class="fas fa-times"></i>
                 </button>
@@ -243,6 +304,7 @@
     <script src="js/download.js"></script>
     <script src="js/book-manager.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/modern-ui.js"></script>
     <script src="js/responsive.js"></script>
     <script src="js/search.js"></script>
     <script src="js/bookmark.js"></script>

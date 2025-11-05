@@ -300,6 +300,11 @@ class EbookReader {
             this.bookTitleElement.textContent = title;
         }
 
+        // Modern UI 헤더 제목 업데이트
+        if (window.modernUI) {
+            window.modernUI.updateBookTitle(title);
+        }
+
         // 페이지 분할 준비
         setTimeout(() => {
             this.paginateContent();
@@ -429,6 +434,11 @@ class EbookReader {
         const scrollProgress = document.getElementById('scrollProgress');
         if (scrollProgress) {
             scrollProgress.style.width = `${percentage}%`;
+        }
+
+        // Modern UI 페이지 슬라이더 업데이트
+        if (window.modernUI) {
+            window.modernUI.updatePageSlider(this.currentPage, this.totalPages);
         }
     }
 

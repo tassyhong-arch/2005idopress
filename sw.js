@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ebook-reader-v13';
+const CACHE_NAME = 'ebook-reader-v14';
 const urlsToCache = [
   './',
   './index.html',
@@ -8,6 +8,7 @@ const urlsToCache = [
   './js/app.js',
   './js/reader.js',
   './js/tts.js',
+  './js/modern-ui.js',
   './js/responsive.js',
   './js/storage.js',
   './js/download.js',
