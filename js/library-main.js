@@ -222,10 +222,13 @@ class LibraryController {
 
         try {
             // 공개 도서관 초기화
+            console.log('Initializing public library...');
             await window.publicLibrary.init();
+            console.log('Public library initialized');
             
             // 모든 도서 가져오기
             const books = await window.publicLibrary.getAllBooks();
+            console.log('Books loaded:', books.length);
 
             if (books.length === 0) {
                 container.innerHTML = `
@@ -252,12 +255,20 @@ class LibraryController {
                             <span><i class="fas fa-tag"></i> ${book.category || '일반'}</span>
                             <span><i class="fas fa-eye"></i> ${book.views || 0}</span>
                         </div>
-                        <button class="read-now-btn add-to-shelf-btn" onclick="libraryController.addToMyShelf(${book.id})">
+                        <button class="read-now-btn add-to-shelf-btn" data-book-id="${book.id}">
                             <i class="fas fa-plus-circle"></i> 내 서재에 추가
                         </button>
                     </div>
                 </div>
             `).join('');
+
+            // 버튼 이벤트 리스너 추가
+            container.querySelectorAll('.add-to-shelf-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const bookId = parseInt(e.currentTarget.getAttribute('data-book-id'));
+                    this.addToMyShelf(bookId);
+                });
+            });
 
         } catch (error) {
             console.error('Load public library error:', error);
@@ -271,17 +282,25 @@ class LibraryController {
     }
 
     async addToMyShelf(bookId) {
+        console.log('addToMyShelf called with bookId:', bookId);
+        
         // 로그인 확인
         if (!window.authManager.isLoggedIn()) {
+            console.log('User not logged in');
             this.showNotification('로그인이 필요합니다', 'warning');
             this.showLoginModal();
             return;
         }
 
         try {
+            console.log('Fetching book from public library, ID:', bookId);
+            
             // 공개 도서관에서 책 정보 가져오기
             const book = await window.publicLibrary.getBook(bookId);
+            console.log('Book fetched:', book);
+            
             if (!book) {
+                console.error('Book not found');
                 this.showNotification('책을 찾을 수 없습니다', 'error');
                 return;
             }
@@ -289,14 +308,19 @@ class LibraryController {
             this.showNotification('📥 구글 드라이브에서 내용을 불러오는 중...', 'info');
 
             // 구글 드라이브에서 실제 텍스트 내용 가져오기
+            console.log('Fetching content from:', book.gdriveUrl);
             const content = await this.fetchGDriveContent(book.gdriveUrl, book.source);
+            console.log('Content fetched, length:', content ? content.length : 0);
             
             if (!content) {
                 throw new Error('문서 내용을 불러올 수 없습니다');
             }
 
             // 내 서재에 저장 (텍스트로 저장)
+            console.log('Initializing bookStorage...');
             await window.bookStorage.init();
+            
+            console.log('Saving to my shelf...');
             const myBookId = await window.bookStorage.saveBook({
                 title: book.title,
                 content: content,
@@ -306,6 +330,7 @@ class LibraryController {
                 size: new Blob([content]).size,
                 uploadedAt: Date.now()
             });
+            console.log('Book saved with ID:', myBookId);
 
             // 조회수 증가
             await window.publicLibrary.incrementViews(bookId);
