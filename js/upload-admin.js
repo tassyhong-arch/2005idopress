@@ -58,19 +58,10 @@ class UploadAdminController {
             window.location.href = 'library.html';
         });
 
-        // 구글 드라이브 링크 추가
-        const addLinkBtn = document.getElementById('addLinkBtn');
-        const gdriveLinkInput = document.getElementById('gdriveLinkInput');
-        
-        addLinkBtn?.addEventListener('click', () => {
-            this.handleGDriveLink();
-        });
-
-        // Enter 키로도 추가 가능
-        gdriveLinkInput?.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                this.handleGDriveLink();
-            }
+        // 도서 등록 버튼
+        const addBookBtn = document.getElementById('addBookBtn');
+        addBookBtn?.addEventListener('click', () => {
+            this.handleAddBook();
         });
 
         // 텍스트 직접 입력
@@ -111,20 +102,42 @@ class UploadAdminController {
         });
     }
 
-    async handleGDriveLink() {
-        const input = document.getElementById('gdriveLinkInput');
-        const url = input.value.trim();
+    async handleAddBook() {
+        const title = document.getElementById('bookTitle').value.trim();
+        const author = document.getElementById('bookAuthor').value.trim();
+        const summary = document.getElementById('bookSummary').value.trim();
+        const category = document.getElementById('bookCategory').value;
+        const url = document.getElementById('gdriveLinkInput').value.trim();
+
+        // 필수 항목 검증
+        if (!title) {
+            this.showNotification('책 제목을 입력하세요', 'warning');
+            document.getElementById('bookTitle').focus();
+            return;
+        }
+
+        if (!author) {
+            this.showNotification('작가를 입력하세요', 'warning');
+            document.getElementById('bookAuthor').focus();
+            return;
+        }
+
+        if (!summary) {
+            this.showNotification('간단 요약을 입력하세요', 'warning');
+            document.getElementById('bookSummary').focus();
+            return;
+        }
 
         if (!url) {
-            this.showNotification('링크를 입력하세요', 'warning');
-            input.focus();
+            this.showNotification('구글 드라이브 링크를 입력하세요', 'warning');
+            document.getElementById('gdriveLinkInput').focus();
             return;
         }
 
         // 구글 드라이브 링크 검증
         if (!this.isValidGDriveLink(url)) {
             this.showNotification('올바른 구글 드라이브 링크가 아닙니다', 'error');
-            input.focus();
+            document.getElementById('gdriveLinkInput').focus();
             return;
         }
 
@@ -132,38 +145,34 @@ class UploadAdminController {
             // 문서 정보 추출
             const docInfo = this.extractGDriveInfo(url);
             
-            this.showNotification('📥 구글 드라이브에서 불러오는 중...', 'info');
+            this.showNotification('📚 공개 도서관에 등록 중...', 'info');
             
-            // 구글 드라이브에서 실제 텍스트 내용 가져오기
-            const content = await this.fetchGDriveContent(url, docInfo.type);
-            
-            if (!content) {
-                throw new Error('문서 내용을 불러올 수 없습니다');
-            }
-
-            // 텍스트로 저장 (오프라인에서도 읽을 수 있도록)
-            const bookId = await window.bookStorage.saveBook({
-                title: docInfo.title,
-                content: content, // 실제 텍스트 내용 저장
-                type: 'txt', // 텍스트 타입으로 저장
-                source: 'gdrive', // 원본이 구글 드라이브임을 표시
-                gdriveUrl: url, // 원본 링크 보관 (나중에 업데이트 가능)
+            // 공개 도서관에 등록 (링크만 저장)
+            const bookId = await window.publicLibrary.addBook({
+                title: title,
+                author: author,
+                summary: summary,
+                category: category,
+                gdriveUrl: url,
                 gdriveId: docInfo.id,
-                size: new Blob([content]).size,
-                uploadedAt: Date.now()
+                source: docInfo.type
             });
 
-            this.showNotification('✅ 도서가 추가되었습니다! (오프라인에서도 읽을 수 있습니다)', 'success');
+            this.showNotification('✅ 도서가 공개 도서관에 등록되었습니다!', 'success');
             
             // 입력 초기화
-            input.value = '';
+            document.getElementById('bookTitle').value = '';
+            document.getElementById('bookAuthor').value = '';
+            document.getElementById('bookSummary').value = '';
+            document.getElementById('bookCategory').value = '일반';
+            document.getElementById('gdriveLinkInput').value = '';
             
             // 데이터 새로고침
             await this.loadData();
 
         } catch (error) {
-            console.error('Add link error:', error);
-            this.showNotification('추가 실패: ' + error.message, 'error');
+            console.error('Add book error:', error);
+            this.showNotification('등록 실패: ' + error.message, 'error');
         }
     }
 
@@ -331,15 +340,8 @@ class UploadAdminController {
 
     async loadRecentUploads() {
         try {
-            const books = await window.bookStorage.getAllBooks();
-            
-            // 업로드 시간 기준으로 정렬 (최신순)
-            this.recentUploads = books.sort((a, b) => {
-                const timeA = a.uploadedAt || a.addedAt || 0;
-                const timeB = b.uploadedAt || b.addedAt || 0;
-                return timeB - timeA;
-            }).slice(0, 10); // 최근 10개
-
+            const books = await window.publicLibrary.getRecentBooks(10);
+            this.recentUploads = books;
             this.renderRecentUploads();
 
         } catch (error) {
@@ -354,45 +356,31 @@ class UploadAdminController {
             list.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-inbox"></i>
-                    <p>최근 추가된 도서가 없습니다</p>
+                    <p>공개 도서관에 등록된 도서가 없습니다</p>
                 </div>
             `;
             return;
         }
 
         list.innerHTML = this.recentUploads.map(book => {
-            const uploadTime = book.uploadedAt || book.addedAt || Date.now();
+            const uploadTime = book.addedAt || Date.now();
             const timeAgo = this.getTimeAgo(uploadTime);
-            const source = book.source || '';
             
-            let icon = 'fas fa-file-alt';
-            let typeLabel = '텍스트';
-            let iconClass = '';
-            
-            // 구글 드라이브에서 가져온 도서인지 확인
-            if (source === 'gdrive') {
-                icon = 'fab fa-google-drive';
-                iconClass = 'gdrive-icon';
-                typeLabel = '구글 드라이브 → 텍스트';
-            }
-
             return `
                 <div class="upload-item" data-book-id="${book.id}">
-                    <div class="upload-item-icon ${iconClass}">
-                        <i class="${icon}"></i>
+                    <div class="upload-item-icon gdrive-icon">
+                        <i class="fab fa-google-drive"></i>
                     </div>
                     <div class="upload-item-info">
                         <div class="upload-item-title">${book.title}</div>
+                        <div class="upload-item-author">${book.author}</div>
                         <div class="upload-item-meta">
                             <span><i class="fas fa-clock"></i> ${timeAgo}</span>
-                            <span><i class="fas fa-tag"></i> ${typeLabel}</span>
-                            ${source === 'gdrive' ? '<span><i class="fas fa-wifi-slash"></i> 오프라인 가능</span>' : ''}
+                            <span><i class="fas fa-tag"></i> ${book.category || '일반'}</span>
+                            <span><i class="fas fa-eye"></i> ${book.views || 0}회</span>
                         </div>
                     </div>
                     <div class="upload-item-actions">
-                        <button class="view-btn" title="보기" onclick="uploadAdmin.viewBook('${book.id}')">
-                            <i class="fas fa-eye"></i>
-                        </button>
                         <button class="delete-btn" title="삭제" onclick="uploadAdmin.deleteBook('${book.id}', '${book.title}')">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -404,22 +392,16 @@ class UploadAdminController {
 
     async updateStorageStats() {
         try {
-            const books = await window.bookStorage.getAllBooks();
-            const totalBooks = books.length;
+            const publicBooks = await window.publicLibrary.getAllBooks();
+            const userBooks = await window.bookStorage.getAllBooks();
             
-            // 소스별 개수 계산
-            let gdriveCount = 0;
-            let textCount = 0;
+            const totalPublicBooks = publicBooks.length;
+            const totalUserBooks = userBooks.length;
+            
+            // 사용자 서재의 용량 계산
             let totalSize = 0;
-
-            books.forEach(book => {
+            userBooks.forEach(book => {
                 totalSize += book.size || 0;
-                // 구글 드라이브에서 가져온 것인지 확인
-                if (book.source === 'gdrive') {
-                    gdriveCount++;
-                } else {
-                    textCount++;
-                }
             });
 
             // 용량 표시
@@ -433,9 +415,9 @@ class UploadAdminController {
             }
 
             // UI 업데이트
-            document.getElementById('totalBooksCount').textContent = totalBooks;
-            document.getElementById('gdriveCount').textContent = gdriveCount;
-            document.getElementById('textCount').textContent = textCount;
+            document.getElementById('totalBooksCount').textContent = totalPublicBooks;
+            document.getElementById('gdriveCount').textContent = totalPublicBooks;
+            document.getElementById('textCount').textContent = totalUserBooks;
             document.getElementById('storageSizeText').textContent = sizeText;
 
         } catch (error) {
@@ -450,12 +432,12 @@ class UploadAdminController {
     }
 
     async deleteBook(bookId, bookTitle) {
-        const confirmed = confirm(`"${bookTitle}" 도서를 삭제하시겠습니까?`);
+        const confirmed = confirm(`"${bookTitle}" 도서를 공개 도서관에서 삭제하시겠습니까?`);
         
         if (!confirmed) return;
 
         try {
-            await window.bookStorage.deleteBook(bookId);
+            await window.publicLibrary.deleteBook(parseInt(bookId));
             this.showNotification(`삭제되었습니다: ${bookTitle}`, 'success');
             await this.loadData();
 

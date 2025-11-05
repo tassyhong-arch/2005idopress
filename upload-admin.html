@@ -37,48 +37,77 @@
                     <div class="upload-icon">
                         <i class="fas fa-cloud-upload-alt"></i>
                     </div>
-                    <h2>새 도서 추가</h2>
+                    <h2>공개 도서관에 도서 등록</h2>
                     <p class="upload-description">
-                        구글 드라이브 문서 링크를 입력하여<br>
-                        가볍고 빠른 도서관을 만드세요
+                        모든 사용자가 볼 수 있는 공개 도서관에<br>
+                        새로운 책을 등록하세요
                     </p>
                     
-                    <div class="link-input-zone" id="linkInputZone">
-                        <div class="link-icon">
-                            <i class="fab fa-google-drive"></i>
+                    <div class="book-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="bookTitle">
+                                    <i class="fas fa-book"></i> 책 제목 *
+                                </label>
+                                <input type="text" id="bookTitle" placeholder="예: 홍길동전" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="bookAuthor">
+                                    <i class="fas fa-user"></i> 작가 *
+                                </label>
+                                <input type="text" id="bookAuthor" placeholder="예: 허균" required>
+                            </div>
                         </div>
-                        <input type="url" id="gdriveLinkInput" class="gdrive-link-input" 
-                               placeholder="https://docs.google.com/document/d/..." 
-                               aria-label="구글 드라이브 링크">
-                        <button id="addLinkBtn" class="add-link-btn">
+
+                        <div class="form-group">
+                            <label for="bookSummary">
+                                <i class="fas fa-align-left"></i> 간단 요약 *
+                            </label>
+                            <textarea id="bookSummary" rows="3" placeholder="예: 조선시대 영웅 홍길동의 파란만장한 모험을 그린 고전소설..." required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bookCategory">
+                                <i class="fas fa-tag"></i> 카테고리
+                            </label>
+                            <select id="bookCategory">
+                                <option value="일반">일반</option>
+                                <option value="고전소설">고전소설</option>
+                                <option value="현대문학">현대문학</option>
+                                <option value="시">시</option>
+                                <option value="에세이">에세이</option>
+                                <option value="자기계발">자기계발</option>
+                                <option value="역사">역사</option>
+                                <option value="과학">과학</option>
+                                <option value="기타">기타</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="gdriveLinkInput">
+                                <i class="fab fa-google-drive"></i> 구글 드라이브 링크 *
+                            </label>
+                            <input type="url" id="gdriveLinkInput" placeholder="https://docs.google.com/document/d/..." required>
+                        </div>
+
+                        <button id="addBookBtn" class="btn-add-book">
                             <i class="fas fa-plus-circle"></i>
-                            추가
-                        </button>
-                    </div>
-                    
-                    <div class="upload-buttons">
-                        <button id="addTextBtn" class="btn-secondary">
-                            <i class="fas fa-edit"></i>
-                            텍스트 직접 입력
+                            도서관에 등록
                         </button>
                     </div>
 
                     <div class="upload-info">
                         <div class="info-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>지원: 구글 문서(Docs), 스프레드시트(Sheets)</span>
+                            <i class="fas fa-users"></i>
+                            <span>모든 사용자가 도서관에서 이 책을 볼 수 있습니다</span>
                         </div>
                         <div class="info-item">
-                            <i class="fas fa-feather"></i>
-                            <span>용량: 링크만 저장하여 앱이 가벼움</span>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-sync-alt"></i>
-                            <span>실시간: 드라이브에서 수정하면 자동 반영</span>
+                            <i class="fas fa-download"></i>
+                            <span>사용자가 "내 서재에 추가"하면 텍스트가 다운로드됩니다</span>
                         </div>
                         <div class="info-item">
                             <i class="fas fa-shield-alt"></i>
-                            <span>공개 권한: 링크가 있는 모든 사용자가 볼 수 있도록 설정 필요</span>
+                            <span>구글 문서는 "링크가 있는 모든 사용자"로 공개 설정 필요</span>
                         </div>
                     </div>
                 </div>
@@ -112,31 +141,31 @@
                 <div class="storage-stats">
                     <div class="storage-details">
                         <div class="stat-item">
-                            <i class="fas fa-book"></i>
+                            <i class="fas fa-book-open"></i>
                             <div>
                                 <strong id="totalBooksCount">0</strong>
-                                <span>전체 도서</span>
+                                <span>공개 도서관</span>
                             </div>
                         </div>
                         <div class="stat-item">
                             <i class="fab fa-google-drive"></i>
                             <div>
                                 <strong id="gdriveCount">0</strong>
-                                <span>구글 드라이브</span>
+                                <span>등록된 도서</span>
                             </div>
                         </div>
                         <div class="stat-item">
-                            <i class="fas fa-file-alt"></i>
+                            <i class="fas fa-users"></i>
                             <div>
                                 <strong id="textCount">0</strong>
-                                <span>텍스트</span>
+                                <span>사용자 서재</span>
                             </div>
                         </div>
                         <div class="stat-item">
-                            <i class="fas fa-feather"></i>
+                            <i class="fas fa-hdd"></i>
                             <div>
-                                <strong id="storageSizeText">~1 KB</strong>
-                                <span>저장 용량</span>
+                                <strong id="storageSizeText">0 B</strong>
+                                <span>서재 용량</span>
                             </div>
                         </div>
                     </div>
@@ -186,6 +215,7 @@
 
     <!-- Scripts -->
     <script src="js/storage.js"></script>
+    <script src="js/public-library.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/upload-admin.js"></script>
 </body>

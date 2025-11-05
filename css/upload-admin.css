@@ -121,36 +121,44 @@
     line-height: 1.6;
 }
 
-/* 링크 입력존 */
-.link-input-zone {
-    border: 3px solid #667eea;
-    border-radius: 16px;
-    padding: 30px;
-    margin: 30px 0;
+/* 도서 등록 폼 */
+.book-form {
     background: white;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    flex-wrap: wrap;
-}
-
-.link-icon {
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #4285f4, #34a853);
+    padding: 30px;
     border-radius: 12px;
-    font-size: 28px;
-    color: white;
-    flex-shrink: 0;
+    margin: 30px 0;
 }
 
-.gdrive-link-input {
-    flex: 1;
-    min-width: 250px;
-    padding: 14px 16px;
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.book-form .form-group {
+    margin-bottom: 20px;
+}
+
+.book-form .form-group label {
+    display: block;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.book-form .form-group label i {
+    color: #667eea;
+}
+
+.book-form .form-group input,
+.book-form .form-group textarea,
+.book-form .form-group select {
+    width: 100%;
+    padding: 12px;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
     font-size: 15px;
@@ -158,38 +166,43 @@
     transition: all 0.3s ease;
 }
 
-.gdrive-link-input:focus {
+.book-form .form-group input:focus,
+.book-form .form-group textarea:focus,
+.book-form .form-group select:focus {
     outline: none;
     border-color: #667eea;
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.gdrive-link-input::placeholder {
-    color: #999;
+.book-form .form-group textarea {
+    resize: vertical;
+    line-height: 1.6;
 }
 
-.add-link-btn {
-    padding: 14px 24px;
+.btn-add-book {
+    width: 100%;
+    padding: 16px;
     background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 10px;
     transition: all 0.3s ease;
-    white-space: nowrap;
+    margin-top: 10px;
 }
 
-.add-link-btn:hover {
+.btn-add-book:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
 }
 
-.add-link-btn:active {
+.btn-add-book:active {
     transform: translateY(0);
 }
 
@@ -409,6 +422,12 @@
     font-weight: 600;
     color: #1a1a1a;
     margin-bottom: 4px;
+}
+
+.upload-item-author {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 6px;
 }
 
 .upload-item-meta {
