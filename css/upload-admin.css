@@ -121,32 +121,76 @@
     line-height: 1.6;
 }
 
-/* 드롭존 */
-.upload-drop-zone {
-    border: 3px dashed #667eea;
-    border-radius: 12px;
-    padding: 60px 20px;
+/* 링크 입력존 */
+.link-input-zone {
+    border: 3px solid #667eea;
+    border-radius: 16px;
+    padding: 30px;
     margin: 30px 0;
-    background: #f8f9ff;
+    background: white;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.link-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #4285f4, #34a853);
+    border-radius: 12px;
+    font-size: 28px;
+    color: white;
+    flex-shrink: 0;
+}
+
+.gdrive-link-input {
+    flex: 1;
+    min-width: 250px;
+    padding: 14px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
     transition: all 0.3s ease;
 }
 
-.upload-drop-zone.dragover {
-    background: #e8ebff;
-    border-color: #764ba2;
-    transform: scale(1.02);
+.gdrive-link-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.upload-drop-zone i {
-    font-size: 48px;
-    color: #667eea;
-    margin-bottom: 10px;
+.gdrive-link-input::placeholder {
+    color: #999;
 }
 
-.upload-drop-zone p {
-    color: #667eea;
+.add-link-btn {
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 8px;
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.add-link-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.add-link-btn:active {
+    transform: translateY(0);
 }
 
 /* 업로드 버튼 */
@@ -351,6 +395,10 @@
     border-radius: 10px;
     color: white;
     font-size: 24px;
+}
+
+.upload-item-icon.gdrive-icon {
+    background: linear-gradient(135deg, #4285f4, #34a853, #fbbc05, #ea4335);
 }
 
 .upload-item-info {
@@ -565,8 +613,24 @@
         font-size: 22px;
     }
 
-    .upload-drop-zone {
-        padding: 40px 15px;
+    .link-input-zone {
+        padding: 20px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .link-icon {
+        align-self: center;
+    }
+
+    .gdrive-link-input {
+        width: 100%;
+        min-width: auto;
+    }
+
+    .add-link-btn {
+        width: 100%;
+        justify-content: center;
     }
 
     .upload-buttons {

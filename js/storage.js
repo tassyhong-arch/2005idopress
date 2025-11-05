@@ -189,6 +189,7 @@ class BookStorage {
         try {
             const book = await this.getBook(id);
             if (book && window.reader) {
+                // 모든 도서는 이미 텍스트로 저장되어 있음
                 window.reader.loadContent(book.content, book.title);
                 await this.updateLastRead(id);
                 localStorage.setItem('last-book-id', id);

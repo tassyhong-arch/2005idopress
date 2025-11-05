@@ -37,26 +37,28 @@
                     <div class="upload-icon">
                         <i class="fas fa-cloud-upload-alt"></i>
                     </div>
-                    <h2>새 도서 업로드</h2>
+                    <h2>새 도서 추가</h2>
                     <p class="upload-description">
-                        PDF, EPUB, 또는 TXT 파일을 선택하거나<br>
-                        이 영역으로 드래그 앤 드롭 하세요
+                        구글 드라이브 문서 링크를 입력하여<br>
+                        가볍고 빠른 도서관을 만드세요
                     </p>
                     
-                    <div class="upload-drop-zone" id="dropZone">
-                        <i class="fas fa-file-upload"></i>
-                        <p>파일을 여기에 드롭하세요</p>
+                    <div class="link-input-zone" id="linkInputZone">
+                        <div class="link-icon">
+                            <i class="fab fa-google-drive"></i>
+                        </div>
+                        <input type="url" id="gdriveLinkInput" class="gdrive-link-input" 
+                               placeholder="https://docs.google.com/document/d/..." 
+                               aria-label="구글 드라이브 링크">
+                        <button id="addLinkBtn" class="add-link-btn">
+                            <i class="fas fa-plus-circle"></i>
+                            추가
+                        </button>
                     </div>
-
-                    <input type="file" id="fileInput" accept=".pdf,.epub,.txt" multiple style="display: none;">
                     
                     <div class="upload-buttons">
-                        <button id="selectFileBtn" class="btn-primary">
-                            <i class="fas fa-folder-open"></i>
-                            파일 선택
-                        </button>
                         <button id="addTextBtn" class="btn-secondary">
-                            <i class="fas fa-plus"></i>
+                            <i class="fas fa-edit"></i>
                             텍스트 직접 입력
                         </button>
                     </div>
@@ -64,15 +66,19 @@
                     <div class="upload-info">
                         <div class="info-item">
                             <i class="fas fa-check-circle"></i>
-                            <span>지원 형식: PDF, EPUB, TXT</span>
+                            <span>지원: 구글 문서(Docs), 스프레드시트(Sheets)</span>
                         </div>
                         <div class="info-item">
-                            <i class="fas fa-database"></i>
-                            <span>최대 용량: 50MB per file</span>
+                            <i class="fas fa-feather"></i>
+                            <span>용량: 링크만 저장하여 앱이 가벼움</span>
                         </div>
                         <div class="info-item">
-                            <i class="fas fa-lock"></i>
-                            <span>로컬 저장: IndexedDB (100MB 제한)</span>
+                            <i class="fas fa-sync-alt"></i>
+                            <span>실시간: 드라이브에서 수정하면 자동 반영</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>공개 권한: 링크가 있는 모든 사용자가 볼 수 있도록 설정 필요</span>
                         </div>
                     </div>
                 </div>
@@ -100,20 +106,10 @@
                 </div>
             </section>
 
-            <!-- 저장소 상태 -->
+            <!-- 도서 통계 -->
             <section class="storage-section">
-                <h3><i class="fas fa-chart-pie"></i> 저장소 사용량</h3>
+                <h3><i class="fas fa-chart-bar"></i> 도서 통계</h3>
                 <div class="storage-stats">
-                    <div class="storage-bar-container">
-                        <div class="storage-bar">
-                            <div id="storageBarFill" class="storage-bar-fill"></div>
-                        </div>
-                        <div class="storage-text">
-                            <span id="storageUsedText">0 MB</span>
-                            <span id="storagePercentText">0%</span>
-                            <span class="storage-total">/ 100 MB</span>
-                        </div>
-                    </div>
                     <div class="storage-details">
                         <div class="stat-item">
                             <i class="fas fa-book"></i>
@@ -123,17 +119,24 @@
                             </div>
                         </div>
                         <div class="stat-item">
-                            <i class="fas fa-file-pdf"></i>
+                            <i class="fab fa-google-drive"></i>
                             <div>
-                                <strong id="pdfCount">0</strong>
-                                <span>PDF</span>
+                                <strong id="gdriveCount">0</strong>
+                                <span>구글 드라이브</span>
                             </div>
                         </div>
                         <div class="stat-item">
                             <i class="fas fa-file-alt"></i>
                             <div>
-                                <strong id="epubCount">0</strong>
-                                <span>EPUB/TXT</span>
+                                <strong id="textCount">0</strong>
+                                <span>텍스트</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-feather"></i>
+                            <div>
+                                <strong id="storageSizeText">~1 KB</strong>
+                                <span>저장 용량</span>
                             </div>
                         </div>
                     </div>

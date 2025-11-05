@@ -58,35 +58,19 @@ class UploadAdminController {
             window.location.href = 'library.html';
         });
 
-        // 파일 선택 버튼
-        const selectFileBtn = document.getElementById('selectFileBtn');
-        const fileInput = document.getElementById('fileInput');
+        // 구글 드라이브 링크 추가
+        const addLinkBtn = document.getElementById('addLinkBtn');
+        const gdriveLinkInput = document.getElementById('gdriveLinkInput');
         
-        selectFileBtn?.addEventListener('click', () => {
-            fileInput?.click();
+        addLinkBtn?.addEventListener('click', () => {
+            this.handleGDriveLink();
         });
 
-        // 파일 선택
-        fileInput?.addEventListener('change', (e) => {
-            this.handleFileSelect(e.target.files);
-        });
-
-        // 드래그 앤 드롭
-        const dropZone = document.getElementById('dropZone');
-        
-        dropZone?.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('dragover');
-        });
-
-        dropZone?.addEventListener('dragleave', () => {
-            dropZone.classList.remove('dragover');
-        });
-
-        dropZone?.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            this.handleFileSelect(e.dataTransfer.files);
+        // Enter 키로도 추가 가능
+        gdriveLinkInput?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                this.handleGDriveLink();
+            }
         });
 
         // 텍스트 직접 입력
@@ -127,122 +111,159 @@ class UploadAdminController {
         });
     }
 
-    async handleFileSelect(files) {
-        if (!files || files.length === 0) return;
+    async handleGDriveLink() {
+        const input = document.getElementById('gdriveLinkInput');
+        const url = input.value.trim();
 
-        const progressSection = document.getElementById('uploadProgressSection');
-        const progressList = document.getElementById('uploadProgressList');
-        
-        progressSection.style.display = 'block';
-        progressList.innerHTML = '';
-
-        for (const file of files) {
-            await this.uploadFile(file, progressList);
-        }
-
-        // 완료 후 2초 뒤 숨김
-        setTimeout(() => {
-            progressSection.style.display = 'none';
-        }, 2000);
-
-        // 데이터 새로고침
-        await this.loadData();
-        
-        // 파일 입력 초기화
-        const fileInput = document.getElementById('fileInput');
-        if (fileInput) fileInput.value = '';
-    }
-
-    async uploadFile(file, progressList) {
-        // 파일 크기 체크 (50MB)
-        if (file.size > 50 * 1024 * 1024) {
-            this.showNotification(`파일이 너무 큽니다: ${file.name} (최대 50MB)`, 'error');
+        if (!url) {
+            this.showNotification('링크를 입력하세요', 'warning');
+            input.focus();
             return;
         }
 
-        // 지원 형식 체크
-        const validExtensions = ['.pdf', '.epub', '.txt'];
-        const fileExt = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
-        
-        if (!validExtensions.includes(fileExt)) {
-            this.showNotification(`지원하지 않는 형식입니다: ${file.name}`, 'error');
+        // 구글 드라이브 링크 검증
+        if (!this.isValidGDriveLink(url)) {
+            this.showNotification('올바른 구글 드라이브 링크가 아닙니다', 'error');
+            input.focus();
             return;
         }
-
-        // 진행 UI 추가
-        const progressItem = document.createElement('div');
-        progressItem.className = 'progress-item';
-        progressItem.innerHTML = `
-            <div class="progress-icon">
-                <i class="fas fa-file-${fileExt === '.pdf' ? 'pdf' : 'alt'}"></i>
-            </div>
-            <div class="progress-info">
-                <div class="progress-name">${file.name}</div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" style="width: 0%"></div>
-                </div>
-                <div class="progress-status">업로드 중...</div>
-            </div>
-        `;
-        progressList.appendChild(progressItem);
-
-        const progressBar = progressItem.querySelector('.progress-bar');
-        const progressStatus = progressItem.querySelector('.progress-status');
 
         try {
-            // 파일 읽기
-            const content = await this.readFile(file);
+            // 문서 정보 추출
+            const docInfo = this.extractGDriveInfo(url);
             
-            // 진행 표시
-            progressBar.style.width = '50%';
+            this.showNotification('📥 구글 드라이브에서 불러오는 중...', 'info');
+            
+            // 구글 드라이브에서 실제 텍스트 내용 가져오기
+            const content = await this.fetchGDriveContent(url, docInfo.type);
+            
+            if (!content) {
+                throw new Error('문서 내용을 불러올 수 없습니다');
+            }
 
-            // 저장
+            // 텍스트로 저장 (오프라인에서도 읽을 수 있도록)
             const bookId = await window.bookStorage.saveBook({
-                title: file.name.replace(/\.[^/.]+$/, ''),
-                content: content,
-                type: fileExt.substring(1),
-                size: file.size,
+                title: docInfo.title,
+                content: content, // 실제 텍스트 내용 저장
+                type: 'txt', // 텍스트 타입으로 저장
+                source: 'gdrive', // 원본이 구글 드라이브임을 표시
+                gdriveUrl: url, // 원본 링크 보관 (나중에 업데이트 가능)
+                gdriveId: docInfo.id,
+                size: new Blob([content]).size,
                 uploadedAt: Date.now()
             });
 
-            // 완료
-            progressBar.style.width = '100%';
-            progressStatus.textContent = '완료!';
-            progressStatus.style.color = '#28a745';
-
-            this.showNotification(`업로드 완료: ${file.name}`, 'success');
+            this.showNotification('✅ 도서가 추가되었습니다! (오프라인에서도 읽을 수 있습니다)', 'success');
+            
+            // 입력 초기화
+            input.value = '';
+            
+            // 데이터 새로고침
+            await this.loadData();
 
         } catch (error) {
-            console.error('Upload error:', error);
-            progressBar.style.width = '100%';
-            progressBar.style.background = '#dc3545';
-            progressStatus.textContent = '실패: ' + error.message;
-            progressStatus.style.color = '#dc3545';
-            
-            this.showNotification(`업로드 실패: ${file.name}`, 'error');
+            console.error('Add link error:', error);
+            this.showNotification('추가 실패: ' + error.message, 'error');
         }
     }
 
-    readFile(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            
-            reader.onload = (e) => {
-                resolve(e.target.result);
-            };
-            
-            reader.onerror = (e) => {
-                reject(new Error('파일 읽기 실패'));
-            };
-
-            const fileExt = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
-            
-            if (fileExt === '.pdf' || fileExt === '.epub') {
-                reader.readAsArrayBuffer(file);
-            } else {
-                reader.readAsText(file);
+    async fetchGDriveContent(url, source) {
+        try {
+            // 구글 문서 ID 추출
+            const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+            if (!match) {
+                throw new Error('유효하지 않은 구글 드라이브 링크입니다');
             }
-        });
+            
+            const docId = match[1];
+            
+            // 텍스트로 내보내기 URL 생성
+            let exportUrl;
+            if (source === 'docs') {
+                // 구글 문서: 텍스트로 내보내기
+                exportUrl = `https://docs.google.com/document/d/${docId}/export?format=txt`;
+            } else if (source === 'sheets') {
+                // 구글 시트: CSV로 내보내기
+                exportUrl = `https://docs.google.com/spreadsheets/d/${docId}/export?format=csv`;
+            } else {
+                // 일반 파일: 직접 다운로드
+                exportUrl = `https://drive.google.com/uc?id=${docId}&export=download`;
+            }
+
+            // 문서 가져오기
+            const response = await fetch(exportUrl, {
+                method: 'GET',
+                mode: 'cors',
+                credentials: 'omit'
+            });
+
+            if (!response.ok) {
+                throw new Error(`문서를 불러올 수 없습니다 (${response.status}). 문서가 "링크가 있는 모든 사용자"로 공개 설정되어 있는지 확인하세요.`);
+            }
+
+            const content = await response.text();
+            
+            if (!content || content.trim().length === 0) {
+                throw new Error('문서 내용이 비어있습니다');
+            }
+
+            return content;
+
+        } catch (error) {
+            console.error('GDrive fetch error:', error);
+            throw error;
+        }
+    }
+
+    isValidGDriveLink(url) {
+        // 구글 문서 또는 시트 링크 체크
+        const patterns = [
+            /docs\.google\.com\/document\/d\//,
+            /docs\.google\.com\/spreadsheets\/d\//,
+            /drive\.google\.com\/file\/d\//
+        ];
+        
+        return patterns.some(pattern => pattern.test(url));
+    }
+
+    extractGDriveInfo(url) {
+        let type = 'docs';
+        let id = '';
+        let title = '제목 없는 문서';
+
+        // 문서 타입 판별
+        if (url.includes('/document/')) {
+            type = 'docs';
+            const match = url.match(/\/document\/d\/([a-zA-Z0-9-_]+)/);
+            id = match ? match[1] : '';
+        } else if (url.includes('/spreadsheets/')) {
+            type = 'sheets';
+            const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+            id = match ? match[1] : '';
+        } else if (url.includes('/file/')) {
+            type = 'file';
+            const match = url.match(/\/file\/d\/([a-zA-Z0-9-_]+)/);
+            id = match ? match[1] : '';
+        }
+
+        // URL에서 제목 추출 시도
+        try {
+            const urlObj = new URL(url);
+            const pathParts = urlObj.pathname.split('/');
+            if (pathParts.length > 3) {
+                title = decodeURIComponent(pathParts[pathParts.length - 2] || title);
+            }
+        } catch (e) {
+            // URL 파싱 실패 시 기본 제목 사용
+        }
+
+        // 제목이 ID인 경우 (일반적인 공유 링크)
+        if (title === id || title.length > 50) {
+            const now = new Date();
+            title = `구글 ${type === 'docs' ? '문서' : '시트'} ${now.toLocaleDateString('ko-KR')}`;
+        }
+
+        return { type, id, title };
     }
 
     showTextInputModal() {
@@ -333,7 +354,7 @@ class UploadAdminController {
             list.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-inbox"></i>
-                    <p>최근 업로드된 도서가 없습니다</p>
+                    <p>최근 추가된 도서가 없습니다</p>
                 </div>
             `;
             return;
@@ -342,24 +363,30 @@ class UploadAdminController {
         list.innerHTML = this.recentUploads.map(book => {
             const uploadTime = book.uploadedAt || book.addedAt || Date.now();
             const timeAgo = this.getTimeAgo(uploadTime);
-            const fileSize = this.formatFileSize(book.size || 0);
-            const fileType = book.type || 'txt';
+            const source = book.source || '';
             
-            let icon = 'fa-file-alt';
-            if (fileType === 'pdf') icon = 'fa-file-pdf';
-            else if (fileType === 'epub') icon = 'fa-book';
+            let icon = 'fas fa-file-alt';
+            let typeLabel = '텍스트';
+            let iconClass = '';
+            
+            // 구글 드라이브에서 가져온 도서인지 확인
+            if (source === 'gdrive') {
+                icon = 'fab fa-google-drive';
+                iconClass = 'gdrive-icon';
+                typeLabel = '구글 드라이브 → 텍스트';
+            }
 
             return `
                 <div class="upload-item" data-book-id="${book.id}">
-                    <div class="upload-item-icon">
-                        <i class="fas ${icon}"></i>
+                    <div class="upload-item-icon ${iconClass}">
+                        <i class="${icon}"></i>
                     </div>
                     <div class="upload-item-info">
                         <div class="upload-item-title">${book.title}</div>
                         <div class="upload-item-meta">
                             <span><i class="fas fa-clock"></i> ${timeAgo}</span>
-                            <span><i class="fas fa-hdd"></i> ${fileSize}</span>
-                            <span><i class="fas fa-file"></i> ${fileType.toUpperCase()}</span>
+                            <span><i class="fas fa-tag"></i> ${typeLabel}</span>
+                            ${source === 'gdrive' ? '<span><i class="fas fa-wifi-slash"></i> 오프라인 가능</span>' : ''}
                         </div>
                     </div>
                     <div class="upload-item-actions">
@@ -380,36 +407,36 @@ class UploadAdminController {
             const books = await window.bookStorage.getAllBooks();
             const totalBooks = books.length;
             
-            // 총 사용량 계산
+            // 소스별 개수 계산
+            let gdriveCount = 0;
+            let textCount = 0;
             let totalSize = 0;
-            let pdfCount = 0;
-            let otherCount = 0;
 
             books.forEach(book => {
                 totalSize += book.size || 0;
-                if (book.type === 'pdf') {
-                    pdfCount++;
+                // 구글 드라이브에서 가져온 것인지 확인
+                if (book.source === 'gdrive') {
+                    gdriveCount++;
                 } else {
-                    otherCount++;
+                    textCount++;
                 }
             });
 
-            const maxSize = 100 * 1024 * 1024; // 100MB
-            const usedMB = (totalSize / (1024 * 1024)).toFixed(2);
-            const percentage = Math.min(100, (totalSize / maxSize) * 100).toFixed(1);
+            // 용량 표시
+            let sizeText;
+            if (totalSize < 1024) {
+                sizeText = `${totalSize} B`;
+            } else if (totalSize < 1024 * 1024) {
+                sizeText = `${(totalSize / 1024).toFixed(1)} KB`;
+            } else {
+                sizeText = `${(totalSize / (1024 * 1024)).toFixed(2)} MB`;
+            }
 
             // UI 업데이트
-            document.getElementById('storageBarFill').style.width = `${percentage}%`;
-            document.getElementById('storageUsedText').textContent = `${usedMB} MB`;
-            document.getElementById('storagePercentText').textContent = `${percentage}%`;
             document.getElementById('totalBooksCount').textContent = totalBooks;
-            document.getElementById('pdfCount').textContent = pdfCount;
-            document.getElementById('epubCount').textContent = otherCount;
-
-            // 저장소 부족 경고
-            if (percentage > 90) {
-                this.showNotification('저장소가 거의 찼습니다! (90% 이상)', 'warning');
-            }
+            document.getElementById('gdriveCount').textContent = gdriveCount;
+            document.getElementById('textCount').textContent = textCount;
+            document.getElementById('storageSizeText').textContent = sizeText;
 
         } catch (error) {
             console.error('Storage stats error:', error);
