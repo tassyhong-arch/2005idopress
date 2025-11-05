@@ -9,6 +9,36 @@ class LibraryController {
         this.setupEventListeners();
         this.updateUIForUser();
         await this.loadPublicLibraryBooks();
+        
+        // 개발/테스트용: 샘플 도서 자동 추가
+        await this.addSampleBookIfNeeded();
+    }
+    
+    async addSampleBookIfNeeded() {
+        try {
+            const books = await window.publicLibrary.getAllBooks();
+            if (books.length === 0) {
+                console.log('공개 도서관이 비어있어 샘플 도서를 추가합니다...');
+                
+                // 샘플 도서 추가
+                await window.publicLibrary.addBook({
+                    title: "주생전",
+                    author: "작자 미상",
+                    summary: "조선시대 중기에 쓰인 한문 소설. 주생이라는 인물이 여러 시련을 겪으며 성장하는 이야기를 담고 있습니다.",
+                    category: "고전소설",
+                    gdriveUrl: "internal://jusaengjeon", // 내부 샘플 텍스트
+                    gdriveId: "sample-jusaengjeon",
+                    source: "sample"
+                });
+                
+                console.log('샘플 도서가 추가되었습니다!');
+                
+                // 도서 목록 새로고침
+                await this.loadPublicLibraryBooks();
+            }
+        } catch (error) {
+            console.error('샘플 도서 추가 실패:', error);
+        }
     }
 
     setupUI() {
@@ -345,6 +375,22 @@ class LibraryController {
 
     async fetchGDriveContent(url, source) {
         try {
+            // 내부 샘플 처리
+            if (url.startsWith('internal://')) {
+                const sampleName = url.replace('internal://', '');
+                console.log('Loading internal sample:', sampleName);
+                
+                // jusaengjeon.txt 파일 불러오기
+                if (sampleName === 'jusaengjeon') {
+                    const response = await fetch('jusaengjeon.txt');
+                    if (response.ok) {
+                        return await response.text();
+                    }
+                }
+                
+                throw new Error('샘플 파일을 찾을 수 없습니다');
+            }
+            
             // 구글 문서 ID 추출
             const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
             if (!match) {

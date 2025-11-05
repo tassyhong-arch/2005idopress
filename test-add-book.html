@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>테스트 도서 추가</title>
+</head>
+<body>
+    <h1>테스트 도서 추가 도구</h1>
+    <button id="addTestBook">테스트 도서 추가</button>
+    <div id="result"></div>
+
+    <script src="js/public-library.js"></script>
+    <script>
+        document.getElementById('addTestBook').addEventListener('click', async () => {
+            const result = document.getElementById('result');
+            result.innerHTML = '추가 중...';
+            
+            try {
+                await window.publicLibrary.init();
+                
+                const bookId = await window.publicLibrary.addBook({
+                    title: "주생전 (테스트)",
+                    author: "작자 미상",
+                    summary: "조선시대 고전 소설. 주생이라는 인물의 이야기를 다룬 작품입니다.",
+                    category: "고전소설",
+                    gdriveUrl: "https://docs.google.com/document/d/1mXKZ8CfRjQQW3qB5xTvYnPZE9jH4sLwO2kN6pM7uR8g/edit?usp=sharing",
+                    gdriveId: "1mXKZ8CfRjQQW3qB5xTvYnPZE9jH4sLwO2kN6pM7uR8g",
+                    source: "docs"
+                });
+                
+                result.innerHTML = `<p style="color: green;">✅ 성공! Book ID: ${bookId}</p>`;
+                console.log('Book added:', bookId);
+                
+                // 확인
+                const books = await window.publicLibrary.getAllBooks();
+                console.log('Total books:', books);
+                result.innerHTML += `<p>총 도서 수: ${books.length}</p>`;
+                result.innerHTML += `<pre>${JSON.stringify(books, null, 2)}</pre>`;
+                
+            } catch (error) {
+                result.innerHTML = `<p style="color: red;">❌ 실패: ${error.message}</p>`;
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
