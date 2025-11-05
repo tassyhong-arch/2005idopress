@@ -41,22 +41,46 @@ class BookStorage {
         });
     }
 
-    async saveBook(title, content, metadata = {}) {
+    async saveBook(titleOrObject, content, metadata = {}) {
         if (!this.db) {
             throw new Error('Database not initialized');
         }
 
         try {
-            const book = {
-                title,
-                content,
-                metadata: {
-                    ...metadata,
-                    size: new Blob([content]).size,
-                    addedAt: Date.now(),
-                    lastRead: Date.now()
-                }
-            };
+            let book;
+            
+            // 객체로 전달된 경우 (새로운 방식)
+            if (typeof titleOrObject === 'object' && titleOrObject !== null) {
+                const data = titleOrObject;
+                book = {
+                    title: data.title,
+                    content: data.content,
+                    type: data.type || 'txt',
+                    source: data.source || 'manual',
+                    size: data.size || new Blob([data.content]).size,
+                    uploadedAt: data.uploadedAt || Date.now(),
+                    publicLibraryId: data.publicLibraryId,
+                    gdriveUrl: data.gdriveUrl,
+                    gdriveId: data.gdriveId,
+                    metadata: {
+                        addedAt: data.uploadedAt || Date.now(),
+                        lastRead: Date.now(),
+                        ...data.metadata
+                    }
+                };
+            } else {
+                // 기존 방식 (title, content, metadata)
+                book = {
+                    title: titleOrObject,
+                    content,
+                    metadata: {
+                        ...metadata,
+                        size: new Blob([content]).size,
+                        addedAt: Date.now(),
+                        lastRead: Date.now()
+                    }
+                };
+            }
 
             // 저장소 용량 체크
             const currentSize = await this.getUsedStorage();

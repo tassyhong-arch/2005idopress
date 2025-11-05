@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>디버그 테스트</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+        .result { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>🔍 도서관 시스템 디버그 테스트</h1>
+    
+    <h2>1. 공개 도서관 테스트</h2>
+    <button onclick="testPublicLibrary()">공개 도서관 초기화 및 도서 확인</button>
+    <button onclick="addTestBook()">테스트 도서 추가</button>
+    <div id="publicResult" class="result"></div>
+    
+    <h2>2. 내 서재 테스트</h2>
+    <button onclick="testMyShelf()">내 서재 초기화 및 도서 확인</button>
+    <button onclick="addBookToMyShelf()">내 서재에 샘플 도서 추가</button>
+    <button onclick="deleteBookFromMyShelf()">첫 번째 도서 삭제</button>
+    <div id="shelfResult" class="result"></div>
+    
+    <h2>3. 인증 테스트</h2>
+    <button onclick="testAuth()">로그인 상태 확인</button>
+    <button onclick="doLogin()">테스트 로그인</button>
+    <div id="authResult" class="result"></div>
+
+    <!-- Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/public-library.js"></script>
+    <script src="js/auth.js"></script>
+    
+    <script>
+        async function testPublicLibrary() {
+            const result = document.getElementById('publicResult');
+            result.innerHTML = '테스트 중...';
+            
+            try {
+                await window.publicLibrary.init();
+                result.innerHTML += '<p>✅ 공개 도서관 초기화 성공</p>';
+                
+                const books = await window.publicLibrary.getAllBooks();
+                result.innerHTML += `<p>📚 등록된 도서: ${books.length}권</p>`;
+                
+                if (books.length > 0) {
+                    result.innerHTML += '<pre>' + JSON.stringify(books, null, 2) + '</pre>';
+                }
+                
+                result.className = 'result success';
+            } catch (error) {
+                result.innerHTML = `<p>❌ 에러: ${error.message}</p>`;
+                result.className = 'result error';
+                console.error(error);
+            }
+        }
+        
+        async function addTestBook() {
+            const result = document.getElementById('publicResult');
+            result.innerHTML = '도서 추가 중...';
+            
+            try {
+                await window.publicLibrary.init();
+                
+                const bookId = await window.publicLibrary.addBook({
+                    title: "테스트 도서 " + Date.now(),
+                    author: "테스트 작가",
+                    summary: "이것은 테스트용 도서입니다.",
+                    category: "테스트",
+                    gdriveUrl: "internal://jusaengjeon",
+                    gdriveId: "test-" + Date.now(),
+                    source: "sample"
+                });
+                
+                result.innerHTML = `<p>✅ 도서 추가 성공! ID: ${bookId}</p>`;
+                result.className = 'result success';
+                
+                // 다시 확인
+                await testPublicLibrary();
+            } catch (error) {
+                result.innerHTML = `<p>❌ 에러: ${error.message}</p>`;
+                result.className = 'result error';
+                console.error(error);
+            }
+        }
+        
+        async function testMyShelf() {
+            const result = document.getElementById('shelfResult');
+            result.innerHTML = '테스트 중...';
+            
+            try {
+                await window.bookStorage.init();
+                result.innerHTML += '<p>✅ 내 서재 초기화 성공</p>';
+                
+                const books = await window.bookStorage.getAllBooks();
+                result.innerHTML += `<p>📚 내 서재 도서: ${books.length}권</p>`;
+                
+                if (books.length > 0) {
+                    result.innerHTML += '<pre>' + JSON.stringify(books.map(b => ({
+                        id: b.id,
+                        title: b.title,
+                        type: b.type,
+                        size: b.size
+                    })), null, 2) + '</pre>';
+                }
+                
+                result.className = 'result success';
+            } catch (error) {
+                result.innerHTML = `<p>❌ 에러: ${error.message}</p>`;
+                result.className = 'result error';
+                console.error(error);
+            }
+        }
+        
+        async function addBookToMyShelf() {
+            const result = document.getElementById('shelfResult');
+            result.innerHTML = '도서 추가 중...';
+            
+            try {
+                await window.bookStorage.init();
+                
+                // jusaengjeon.txt 파일 불러오기
+                const response = await fetch('jusaengjeon.txt');
+                const content = await response.text();
+                
+                const bookId = await window.bookStorage.saveBook({
+                    title: "내 서재 테스트 도서 " + Date.now(),
+                    content: content,
+                    type: 'txt',
+                    source: 'test',
+                    size: new Blob([content]).size,
+                    uploadedAt: Date.now()
+                });
+                
+                result.innerHTML = `<p>✅ 내 서재에 추가 성공! ID: ${bookId}</p>`;
+                result.className = 'result success';
+                
+                // 다시 확인
+                await testMyShelf();
+            } catch (error) {
+                result.innerHTML = `<p>❌ 에러: ${error.message}</p>`;
+                result.className = 'result error';
+                console.error(error);
+            }
+        }
+        
+        async function deleteBookFromMyShelf() {
+            const result = document.getElementById('shelfResult');
+            result.innerHTML = '삭제 중...';
+            
+            try {
+                await window.bookStorage.init();
+                const books = await window.bookStorage.getAllBooks();
+                
+                if (books.length === 0) {
+                    result.innerHTML = '<p>⚠️ 삭제할 도서가 없습니다</p>';
+                    result.className = 'result';
+                    return;
+                }
+                
+                const firstBook = books[0];
+                await window.bookStorage.deleteBook(firstBook.id);
+                
+                result.innerHTML = `<p>✅ 도서 삭제 성공! (${firstBook.title})</p>`;
+                result.className = 'result success';
+                
+                // 다시 확인
+                await testMyShelf();
+            } catch (error) {
+                result.innerHTML = `<p>❌ 에러: ${error.message}</p>`;
+                result.className = 'result error';
+                console.error(error);
+            }
+        }
+        
+        function testAuth() {
+            const result = document.getElementById('authResult');
+            
+            if (window.authManager) {
+                const isLoggedIn = window.authManager.isLoggedIn();
+                const user = window.authManager.getCurrentUser();
+                
+                result.innerHTML = `
+                    <p>로그인 상태: ${isLoggedIn ? '✅ 로그인됨' : '❌ 로그아웃'}</p>
+                    ${user ? `<p>사용자: ${user.displayName}</p>` : ''}
+                `;
+                result.className = 'result ' + (isLoggedIn ? 'success' : '');
+            } else {
+                result.innerHTML = '<p>❌ authManager가 로드되지 않았습니다</p>';
+                result.className = 'result error';
+            }
+        }
+        
+        function doLogin() {
+            const result = document.getElementById('authResult');
+            
+            if (window.authManager) {
+                window.authManager.login('테스터');
+                result.innerHTML = '<p>✅ 로그인 완료</p>';
+                result.className = 'result success';
+                testAuth();
+            } else {
+                result.innerHTML = '<p>❌ authManager가 로드되지 않았습니다</p>';
+                result.className = 'result error';
+            }
+        }
+        
+        // 페이지 로드 시 자동 테스트
+        window.addEventListener('load', async () => {
+            console.log('=== 자동 테스트 시작 ===');
+            await testPublicLibrary();
+            await testMyShelf();
+            testAuth();
+        });
+    </script>
+</body>
+</html>
