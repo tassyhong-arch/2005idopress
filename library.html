@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 공개 도서관 - 이북 리더</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/library.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="./icons/icon-192.svg">
+</head>
+<body class="library-body">
+    <!-- 헤더 -->
+    <header class="library-header">
+        <div class="library-header-content">
+            <div class="library-logo">
+                <i class="fas fa-book-open"></i>
+                <h1>공개 도서관</h1>
+            </div>
+            <div class="library-user-section">
+                <div id="userInfo" class="user-info" style="display: none;">
+                    <div class="user-avatar" id="userAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span id="userName" class="user-name"></span>
+                    <button id="logoutBtn" class="logout-btn" title="로그아웃">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+                <button id="loginBtn" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>로그인</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="library-main">
+        <!-- 환영 배너 -->
+        <section class="welcome-banner">
+            <div class="banner-content">
+                <h2>📖 나만의 디지털 도서관에 오신 것을 환영합니다</h2>
+                <p>무료로 책을 읽고, 저장하고, 언제 어디서나 즐기세요</p>
+            </div>
+        </section>
+
+        <!-- 빠른 액션 -->
+        <section class="quick-actions">
+            <a href="index.html" class="action-card primary">
+                <i class="fas fa-book-reader"></i>
+                <h3>지금 읽기</h3>
+                <p>도서 리더로 이동</p>
+            </a>
+            <button id="myShelfBtn" class="action-card secondary" disabled>
+                <i class="fas fa-bookmark"></i>
+                <h3>내 책장</h3>
+                <p>저장한 책 관리</p>
+                <span class="login-required">로그인 필요</span>
+            </button>
+            <button id="uploadBookBtn" class="action-card accent" disabled>
+                <i class="fas fa-upload"></i>
+                <h3>도서 추가</h3>
+                <p>새 책 업로드</p>
+                <span class="login-required">로그인 필요</span>
+            </button>
+        </section>
+
+        <!-- 추천 도서 -->
+        <section class="featured-books">
+            <div class="section-header">
+                <h2><i class="fas fa-star"></i> 추천 도서</h2>
+                <p>인기 있는 무료 전자책을 만나보세요</p>
+            </div>
+            <div class="books-grid" id="featuredBooks">
+                <!-- 추천 도서 카드들 -->
+                <div class="featured-book-card">
+                    <div class="book-cover-placeholder">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="book-info">
+                        <h3>주생전 (朱生傳)</h3>
+                        <p class="book-author">작자 미상</p>
+                        <p class="book-desc">조선시대 고전 소설</p>
+                        <button class="read-now-btn" onclick="loadSampleBook('jusaengjeon')">
+                            <i class="fas fa-play"></i> 읽기
+                        </button>
+                    </div>
+                </div>
+
+                <div class="featured-book-card">
+                    <div class="book-cover-placeholder">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="book-info">
+                        <h3>구텐베르크 프로젝트</h3>
+                        <p class="book-author">공개 도메인</p>
+                        <p class="book-desc">70,000+ 무료 전자책</p>
+                        <a href="https://www.gutenberg.org" target="_blank" class="read-now-btn">
+                            <i class="fas fa-external-link-alt"></i> 방문
+                        </a>
+                    </div>
+                </div>
+
+                <div class="featured-book-card">
+                    <div class="book-cover-placeholder">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="book-info">
+                        <h3>나만의 책</h3>
+                        <p class="book-author">직접 추가</p>
+                        <p class="book-desc">텍스트나 URL로 추가</p>
+                        <button class="read-now-btn" onclick="goToReader()">
+                            <i class="fas fa-plus"></i> 추가하기
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 기능 소개 -->
+        <section class="features">
+            <div class="section-header">
+                <h2><i class="fas fa-magic"></i> 주요 기능</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>반응형 디자인</h3>
+                    <p>모바일, 태블릿, PC 모두 지원</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-moon"></i>
+                    </div>
+                    <h3>다크 모드</h3>
+                    <p>눈이 편안한 독서 환경</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-headphones"></i>
+                    </div>
+                    <h3>TTS 음성 듣기</h3>
+                    <p>책을 들으면서 읽기</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-highlighter"></i>
+                    </div>
+                    <h3>하이라이트 & 메모</h3>
+                    <p>중요한 부분 표시 및 메모</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-wifi"></i>
+                    </div>
+                    <h3>오프라인 지원</h3>
+                    <p>인터넷 없이도 책 읽기</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync"></i>
+                    </div>
+                    <h3>자동 동기화</h3>
+                    <p>읽던 위치 자동 저장</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="library-footer">
+        <p>&copy; 2025 이북 리더. Made with ❤️</p>
+        <div class="footer-links">
+            <a href="guide.html">사용 가이드</a>
+            <a href="index.html">리더 실행</a>
+        </div>
+    </footer>
+
+    <!-- 로그인 모달 -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content login-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-circle"></i> 로그인</h2>
+                <button id="closeLoginModal" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="login-form">
+                    <div class="form-group">
+                        <label for="usernameInput">
+                            <i class="fas fa-user"></i> 사용자명
+                        </label>
+                        <input 
+                            type="text" 
+                            id="usernameInput" 
+                            class="form-input" 
+                            placeholder="원하는 이름을 입력하세요"
+                            maxlength="20"
+                        >
+                        <small class="form-hint">비밀번호 없이 간편하게 로그인</small>
+                    </div>
+                    
+                    <!-- 최근 사용자 목록 -->
+                    <div id="recentUsers" class="recent-users" style="display: none;">
+                        <label>최근 사용자</label>
+                        <div id="recentUsersList" class="recent-users-list"></div>
+                    </div>
+
+                    <button id="loginSubmitBtn" class="submit-btn">
+                        <i class="fas fa-sign-in-alt"></i> 로그인
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/library-main.js"></script>
+</body>
+</html>

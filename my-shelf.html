@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📚 내 책장 - 이북 리더</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/library.css">
+    <link rel="stylesheet" href="css/my-shelf.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="./icons/icon-192.svg">
+</head>
+<body class="library-body">
+    <!-- 헤더 -->
+    <header class="library-header">
+        <div class="library-header-content">
+            <div class="library-logo">
+                <a href="library.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 12px;">
+                    <i class="fas fa-arrow-left"></i>
+                    <i class="fas fa-bookmark"></i>
+                    <h1>내 책장</h1>
+                </a>
+            </div>
+            <div class="library-user-section">
+                <div id="userInfo" class="user-info">
+                    <div class="user-avatar" id="userAvatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <span id="userName" class="user-name"></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="library-main shelf-main">
+        <!-- 통계 카드 -->
+        <section class="stats-section">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="totalBooks">0</h3>
+                    <p>전체 도서</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-book-reader"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="readingBooks">0</h3>
+                    <p>읽는 중</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="completedBooks">0</h3>
+                    <p>완독</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="stat-info">
+                    <h3 id="storageUsed">0MB</h3>
+                    <p>사용 중</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 액션 버튼 -->
+        <section class="shelf-actions">
+            <a href="index.html" class="shelf-action-btn primary">
+                <i class="fas fa-plus"></i> 새 도서 추가
+            </a>
+            <button id="sortBtn" class="shelf-action-btn secondary">
+                <i class="fas fa-sort"></i> 정렬
+            </button>
+            <button id="viewBtn" class="shelf-action-btn secondary">
+                <i class="fas fa-th"></i> 보기 변경
+            </button>
+        </section>
+
+        <!-- 도서 목록 -->
+        <section class="my-books-section">
+            <div class="section-header">
+                <h2><i class="fas fa-book"></i> 내 도서</h2>
+                <p id="bookCount">0권의 도서</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state-shelf">
+                <i class="fas fa-book-open"></i>
+                <h3>아직 저장된 도서가 없습니다</h3>
+                <p>새로운 도서를 추가하여 나만의 도서관을 만들어보세요</p>
+                <a href="index.html" class="empty-action-btn">
+                    <i class="fas fa-plus"></i> 첫 도서 추가하기
+                </a>
+            </div>
+
+            <!-- 도서 그리드 -->
+            <div id="myBooksList" class="books-grid" style="display: none;">
+                <!-- 도서 카드들이 여기에 동적으로 추가됩니다 -->
+            </div>
+        </section>
+    </main>
+
+    <!-- 정렬 메뉴 팝업 -->
+    <div id="sortMenu" class="context-menu" style="display: none;">
+        <button data-sort="recent"><i class="fas fa-clock"></i> 최근 순</button>
+        <button data-sort="title"><i class="fas fa-font"></i> 제목 순</button>
+        <button data-sort="progress"><i class="fas fa-chart-line"></i> 진행률 순</button>
+        <button data-sort="size"><i class="fas fa-database"></i> 크기 순</button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/my-shelf.js"></script>
+</body>
+</html>
