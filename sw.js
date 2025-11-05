@@ -1,14 +1,16 @@
-const CACHE_NAME = 'ebook-reader-v15';
+const CACHE_NAME = 'ebook-reader-v16';
 const urlsToCache = [
   './',
   './index.html',
   './library.html',
   './my-shelf.html',
+  './upload-admin.html',
   './manifest.json',
   './css/style.css',
   './css/responsive.css',
   './css/library.css',
   './css/my-shelf.css',
+  './css/upload-admin.css',
   './js/app.js',
   './js/auth.js',
   './js/reader.js',
@@ -20,6 +22,7 @@ const urlsToCache = [
   './js/book-manager.js',
   './js/library-main.js',
   './js/my-shelf.js',
+  './js/upload-admin.js',
   './js/search.js',
   './js/bookmark.js',
   './js/highlight.js',

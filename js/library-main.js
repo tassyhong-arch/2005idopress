@@ -60,7 +60,7 @@ class LibraryController {
         const uploadBookBtn = document.getElementById('uploadBookBtn');
         uploadBookBtn?.addEventListener('click', () => {
             if (window.authManager.isLoggedIn()) {
-                window.location.href = 'index.html#add-book';
+                window.location.href = 'upload-admin.html';
             } else {
                 this.showLoginModal();
             }

@@ -186,10 +186,10 @@ class ModernUIController {
             this.toggleQuickSettings();
         });
 
-        // 뒤로 가기 버튼
+        // 뒤로 가기 버튼 - 도서관으로 이동
         const backBtn = document.getElementById('backBtn');
         backBtn?.addEventListener('click', () => {
-            document.getElementById('bookManagerBtn')?.click();
+            window.location.href = 'library.html';
         });
 
         // 메뉴 버튼 (추후 확장)

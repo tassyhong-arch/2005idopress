@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>도서 업로드 관리자 - 이북 리더</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/library.css">
+    <link rel="stylesheet" href="css/upload-admin.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/svg+xml" href="./icons/icon-192.svg">
+</head>
+<body>
+    <div class="upload-admin-container">
+        <!-- 헤더 -->
+        <header class="admin-header">
+            <button id="backToLibrary" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1>
+                <i class="fas fa-cloud-upload-alt"></i>
+                도서 업로드 관리자
+            </h1>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar"></div>
+                <span id="userName">관리자</span>
+            </div>
+        </header>
+
+        <!-- 메인 컨텐츠 -->
+        <main class="admin-main">
+            <!-- 업로드 영역 -->
+            <section class="upload-section">
+                <div class="upload-card">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h2>새 도서 업로드</h2>
+                    <p class="upload-description">
+                        PDF, EPUB, 또는 TXT 파일을 선택하거나<br>
+                        이 영역으로 드래그 앤 드롭 하세요
+                    </p>
+                    
+                    <div class="upload-drop-zone" id="dropZone">
+                        <i class="fas fa-file-upload"></i>
+                        <p>파일을 여기에 드롭하세요</p>
+                    </div>
+
+                    <input type="file" id="fileInput" accept=".pdf,.epub,.txt" multiple style="display: none;">
+                    
+                    <div class="upload-buttons">
+                        <button id="selectFileBtn" class="btn-primary">
+                            <i class="fas fa-folder-open"></i>
+                            파일 선택
+                        </button>
+                        <button id="addTextBtn" class="btn-secondary">
+                            <i class="fas fa-plus"></i>
+                            텍스트 직접 입력
+                        </button>
+                    </div>
+
+                    <div class="upload-info">
+                        <div class="info-item">
+                            <i class="fas fa-check-circle"></i>
+                            <span>지원 형식: PDF, EPUB, TXT</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-database"></i>
+                            <span>최대 용량: 50MB per file</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-lock"></i>
+                            <span>로컬 저장: IndexedDB (100MB 제한)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 업로드 진행 상태 -->
+            <section class="upload-progress-section" id="uploadProgressSection" style="display: none;">
+                <h3><i class="fas fa-spinner fa-spin"></i> 업로드 진행중...</h3>
+                <div id="uploadProgressList" class="progress-list"></div>
+            </section>
+
+            <!-- 최근 업로드 -->
+            <section class="recent-uploads-section">
+                <div class="section-header">
+                    <h3><i class="fas fa-history"></i> 최근 업로드</h3>
+                    <button id="refreshBtn" class="icon-btn" title="새로고침">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div id="recentUploadsList" class="uploads-list">
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>최근 업로드된 도서가 없습니다</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 저장소 상태 -->
+            <section class="storage-section">
+                <h3><i class="fas fa-chart-pie"></i> 저장소 사용량</h3>
+                <div class="storage-stats">
+                    <div class="storage-bar-container">
+                        <div class="storage-bar">
+                            <div id="storageBarFill" class="storage-bar-fill"></div>
+                        </div>
+                        <div class="storage-text">
+                            <span id="storageUsedText">0 MB</span>
+                            <span id="storagePercentText">0%</span>
+                            <span class="storage-total">/ 100 MB</span>
+                        </div>
+                    </div>
+                    <div class="storage-details">
+                        <div class="stat-item">
+                            <i class="fas fa-book"></i>
+                            <div>
+                                <strong id="totalBooksCount">0</strong>
+                                <span>전체 도서</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-file-pdf"></i>
+                            <div>
+                                <strong id="pdfCount">0</strong>
+                                <span>PDF</span>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <i class="fas fa-file-alt"></i>
+                            <div>
+                                <strong id="epubCount">0</strong>
+                                <span>EPUB/TXT</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 텍스트 입력 모달 -->
+    <div id="textInputModal" class="modal">
+        <div class="modal-content text-input-modal">
+            <div class="modal-header">
+                <h2><i class="fas fa-pen"></i> 텍스트 직접 입력</h2>
+                <button id="closeTextModal" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="bookTitleInput">
+                        <i class="fas fa-book"></i> 도서 제목 *
+                    </label>
+                    <input type="text" id="bookTitleInput" placeholder="예: 나의 첫 번째 소설" required>
+                </div>
+                <div class="form-group">
+                    <label for="bookContentInput">
+                        <i class="fas fa-align-left"></i> 내용 *
+                    </label>
+                    <textarea id="bookContentInput" rows="15" placeholder="여기에 텍스트를 입력하세요...&#10;&#10;여러 줄의 텍스트를 입력할 수 있습니다." required></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button id="cancelTextBtn" class="btn-secondary">
+                        <i class="fas fa-times"></i> 취소
+                    </button>
+                    <button id="saveTextBtn" class="btn-primary">
+                        <i class="fas fa-save"></i> 저장
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 알림 -->
+    <div id="notification" class="notification">
+        <span id="notificationText"></span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/upload-admin.js"></script>
+</body>
+</html>
