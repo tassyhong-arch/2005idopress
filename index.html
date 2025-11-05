@@ -39,6 +39,10 @@
                         <div id="progressFill" class="progress-fill"></div>
                     </div>
                 </div>
+                <button id="ttsBtn" class="control-btn tts-btn" title="음성 듣기 (TTS)">
+                    <i class="fas fa-headphones"></i>
+                    <span class="btn-text">듣기</span>
+                </button>
                 <button id="bookManagerBtn" class="control-btn book-manager-btn" title="도서 관리">
                     <i class="fas fa-book"></i>
                     <span class="btn-text">도서</span>
@@ -155,6 +159,70 @@
             </div>
         </div>
     </div>
+    <div id="ttsModal" class="modal">
+        <div class="modal-content tts-modal">
+            <div class="modal-header">
+                <h2>
+                    <i class="fas fa-headphones"></i> 음성 듣기 (TTS)
+                </h2>
+                <button id="closeTtsModal" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="tts-controls">
+                    <div class="tts-playback-controls">
+                        <button id="ttsPlayBtn" class="tts-control-btn primary" title="재생">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button id="ttsPauseBtn" class="tts-control-btn" title="일시정지" style="display: none;">
+                            <i class="fas fa-pause"></i>
+                        </button>
+                        <button id="ttsStopBtn" class="tts-control-btn" title="정지">
+                            <i class="fas fa-stop"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <label>
+                            <i class="fas fa-tachometer-alt"></i> 재생 속도
+                            <span id="ttsRateDisplay" class="value-display">1.0x</span>
+                        </label>
+                        <input type="range" id="ttsRate" min="0.5" max="2.0" step="0.1" value="1.0">
+                        <div class="rate-markers">
+                            <span>0.5x</span>
+                            <span>1.0x</span>
+                            <span>1.5x</span>
+                            <span>2.0x</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-group">
+                        <label>
+                            <i class="fas fa-volume-up"></i> 음성 선택
+                        </label>
+                        <select id="ttsVoice" class="tts-voice-select">
+                            <option value="">기본 음성</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="ttsAutoPageTurn" checked>
+                            <span><i class="fas fa-arrow-right"></i> 자동 페이지 넘김</span>
+                        </label>
+                    </div>
+
+                    <div class="tts-status">
+                        <div class="tts-status-item">
+                            <i class="fas fa-info-circle"></i>
+                            <span id="ttsStatus">준비됨</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="notification" class="notification">
         <span id="notificationText"></span>
     </div>
@@ -171,6 +239,7 @@
     <!-- 순서 중요: storage -> reader -> app -> 나머지 -->
     <script src="js/storage.js"></script>
     <script src="js/reader.js"></script>
+    <script src="js/tts.js"></script>
     <script src="js/download.js"></script>
     <script src="js/book-manager.js"></script>
     <script src="js/app.js"></script>

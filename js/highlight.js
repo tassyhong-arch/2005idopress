@@ -1,4 +1,4 @@
-// 하이라이트 기능
+// 하이라이트 및 밑줄 기능 - 교보문고 스타일
 class HighlightManager {
     constructor() {
         this.highlights = [];
@@ -11,6 +11,7 @@ class HighlightManager {
             { name: '주황', value: '#ff9800', textColor: '#000' }
         ];
         this.selectedColor = this.colors[0];
+        this.selectedType = 'highlight'; // 'highlight' or 'underline'
         this.init();
     }
 
@@ -47,6 +48,14 @@ class HighlightManager {
         selectionTooltip.id = 'selectionTooltip';
         selectionTooltip.className = 'selection-tooltip';
         selectionTooltip.innerHTML = `
+            <div class="tooltip-types">
+                <button class="tooltip-type-btn active" data-type="highlight" title="형광펜">
+                    <i class="fas fa-highlighter"></i>
+                </button>
+                <button class="tooltip-type-btn" data-type="underline" title="밑줄">
+                    <i class="fas fa-underline"></i>
+                </button>
+            </div>
             <div class="tooltip-colors">
                 ${this.colors.map((color, index) => `
                     <button class="tooltip-color-btn ${index === 0 ? 'active' : ''}" 
@@ -58,7 +67,7 @@ class HighlightManager {
                 `).join('')}
             </div>
             <button class="tooltip-highlight-btn">
-                <i class="fas fa-highlighter"></i> 하이라이트
+                <i class="fas fa-check"></i> 적용
             </button>
         `;
         document.body.appendChild(selectionTooltip);
@@ -171,6 +180,16 @@ class HighlightManager {
         document.addEventListener('mouseup', (e) => this.handleTextSelection(e));
         document.addEventListener('touchend', (e) => this.handleTextSelection(e));
 
+        // 선택 툴팁 타입 버튼 (형광펜/밑줄)
+        document.querySelectorAll('.tooltip-type-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.tooltip-type-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.selectedType = btn.dataset.type;
+            });
+        });
+
         // 선택 툴팁 색상 버튼
         document.querySelectorAll('.tooltip-color-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -182,7 +201,7 @@ class HighlightManager {
             });
         });
 
-        // 선택 툴팁 하이라이트 버튼
+        // 선택 툴팁 적용 버튼
         const tooltipHighlightBtn = document.querySelector('.tooltip-highlight-btn');
         tooltipHighlightBtn?.addEventListener('click', () => {
             this.createHighlight();
@@ -255,11 +274,12 @@ class HighlightManager {
             return;
         }
 
-        // 하이라이트 데이터 생성
+        // 하이라이트/밑줄 데이터 생성
         const highlight = {
             id: Date.now(),
             text: selectedText,
             color: this.selectedColor.value,
+            type: this.selectedType, // 'highlight' or 'underline'
             page: window.reader.currentPage,
             note: '',
             createdAt: Date.now(),
@@ -324,8 +344,18 @@ class HighlightManager {
                 span.innerHTML = beforeText;
                 
                 const mark = document.createElement('mark');
-                mark.className = 'user-highlight';
-                mark.style.backgroundColor = highlight.color;
+                mark.className = highlight.type === 'underline' ? 'user-underline' : 'user-highlight';
+                
+                if (highlight.type === 'underline') {
+                    mark.style.textDecoration = 'underline';
+                    mark.style.textDecorationColor = highlight.color;
+                    mark.style.textDecorationThickness = '2px';
+                    mark.style.textUnderlineOffset = '2px';
+                    mark.style.backgroundColor = 'transparent';
+                } else {
+                    mark.style.backgroundColor = highlight.color;
+                }
+                
                 mark.style.cursor = 'pointer';
                 mark.dataset.highlightId = highlight.id;
                 mark.textContent = highlightedText;

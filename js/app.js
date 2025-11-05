@@ -60,6 +60,9 @@ class EbookApp {
     }
 
     setupEventListeners() {
+        // TTS 모달 및 컨트롤
+        this.setupTTSControls();
+        
         // 도움말 버튼
         const helpBtn = document.getElementById('helpBtn');
         helpBtn?.addEventListener('click', () => {
@@ -196,6 +199,187 @@ class EbookApp {
         
         if (window.reader) {
             window.reader.recalculatePages();
+        }
+    }
+
+    setupTTSControls() {
+        const ttsBtn = document.getElementById('ttsBtn');
+        const ttsModal = document.getElementById('ttsModal');
+        const closeTtsModal = document.getElementById('closeTtsModal');
+        const ttsPlayBtn = document.getElementById('ttsPlayBtn');
+        const ttsPauseBtn = document.getElementById('ttsPauseBtn');
+        const ttsStopBtn = document.getElementById('ttsStopBtn');
+        const ttsRate = document.getElementById('ttsRate');
+        const ttsRateDisplay = document.getElementById('ttsRateDisplay');
+        const ttsVoice = document.getElementById('ttsVoice');
+        const ttsAutoPageTurn = document.getElementById('ttsAutoPageTurn');
+        const ttsStatus = document.getElementById('ttsStatus');
+
+        // TTS 모달 열기
+        ttsBtn?.addEventListener('click', () => {
+            if (!window.ttsManager) {
+                this.showNotification('TTS 기능을 초기화하는 중입니다...', 'info');
+                return;
+            }
+            
+            this.populateTTSVoices();
+            ttsModal.style.display = 'flex';
+            ttsModal.classList.add('show');
+        });
+
+        // TTS 모달 닫기
+        closeTtsModal?.addEventListener('click', () => {
+            ttsModal.style.display = 'none';
+            ttsModal.classList.remove('show');
+        });
+
+        ttsModal?.addEventListener('click', (e) => {
+            if (e.target === ttsModal) {
+                ttsModal.style.display = 'none';
+                ttsModal.classList.remove('show');
+            }
+        });
+
+        // TTS 재생 버튼
+        ttsPlayBtn?.addEventListener('click', () => {
+            if (!window.ttsManager) return;
+            
+            if (window.ttsManager.isPaused) {
+                window.ttsManager.resume();
+            } else {
+                window.ttsManager.readCurrentPage();
+            }
+            
+            ttsPlayBtn.style.display = 'none';
+            ttsPauseBtn.style.display = 'inline-flex';
+            if (ttsStatus) ttsStatus.textContent = '재생 중...';
+        });
+
+        // TTS 일시정지 버튼
+        ttsPauseBtn?.addEventListener('click', () => {
+            if (!window.ttsManager) return;
+            
+            window.ttsManager.pause();
+            ttsPauseBtn.style.display = 'none';
+            ttsPlayBtn.style.display = 'inline-flex';
+            if (ttsStatus) ttsStatus.textContent = '일시정지';
+        });
+
+        // TTS 정지 버튼
+        ttsStopBtn?.addEventListener('click', () => {
+            if (!window.ttsManager) return;
+            
+            window.ttsManager.stop();
+            ttsPauseBtn.style.display = 'none';
+            ttsPlayBtn.style.display = 'inline-flex';
+            if (ttsStatus) ttsStatus.textContent = '정지됨';
+        });
+
+        // TTS 속도 조절
+        ttsRate?.addEventListener('input', (e) => {
+            if (!window.ttsManager) return;
+            
+            const rate = parseFloat(e.target.value);
+            window.ttsManager.setRate(rate);
+            if (ttsRateDisplay) {
+                ttsRateDisplay.textContent = `${rate.toFixed(1)}x`;
+            }
+        });
+
+        // TTS 음성 선택
+        ttsVoice?.addEventListener('change', (e) => {
+            if (!window.ttsManager) return;
+            
+            const selectedVoice = window.ttsManager.voices.find(v => v.name === e.target.value);
+            if (selectedVoice) {
+                window.ttsManager.setVoice(selectedVoice);
+                this.showNotification(`음성이 변경되었습니다: ${selectedVoice.name}`);
+            }
+        });
+
+        // TTS 자동 페이지 넘김
+        ttsAutoPageTurn?.addEventListener('change', (e) => {
+            if (!window.ttsManager) return;
+            
+            window.ttsManager.setAutoPageTurn(e.target.checked);
+            const message = e.target.checked ? '자동 페이지 넘김 활성화' : '자동 페이지 넘김 비활성화';
+            this.showNotification(message);
+        });
+
+        // TTS 이벤트 핸들러
+        if (window.ttsManager) {
+            window.ttsManager.onStart = () => {
+                if (ttsStatus) ttsStatus.textContent = '재생 중...';
+            };
+
+            window.ttsManager.onEnd = () => {
+                if (ttsStatus) ttsStatus.textContent = '재생 완료';
+                if (ttsPauseBtn) ttsPauseBtn.style.display = 'none';
+                if (ttsPlayBtn) ttsPlayBtn.style.display = 'inline-flex';
+            };
+
+            window.ttsManager.onError = (error) => {
+                if (ttsStatus) ttsStatus.textContent = '오류 발생';
+                this.showNotification('음성 재생 오류가 발생했습니다', 'error');
+            };
+        }
+    }
+
+    populateTTSVoices() {
+        if (!window.ttsManager) return;
+        
+        const ttsVoice = document.getElementById('ttsVoice');
+        if (!ttsVoice) return;
+        
+        const grouped = window.ttsManager.getAvailableVoices();
+        ttsVoice.innerHTML = '';
+        
+        // 한국어 음성
+        if (grouped.korean.length > 0) {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = '한국어';
+            grouped.korean.forEach(voice => {
+                const option = document.createElement('option');
+                option.value = voice.name;
+                option.textContent = `${voice.name} (${voice.lang})`;
+                if (voice === window.ttsManager.currentVoice) {
+                    option.selected = true;
+                }
+                optgroup.appendChild(option);
+            });
+            ttsVoice.appendChild(optgroup);
+        }
+        
+        // 영어 음성
+        if (grouped.english.length > 0) {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = '영어';
+            grouped.english.forEach(voice => {
+                const option = document.createElement('option');
+                option.value = voice.name;
+                option.textContent = `${voice.name} (${voice.lang})`;
+                if (voice === window.ttsManager.currentVoice) {
+                    option.selected = true;
+                }
+                optgroup.appendChild(option);
+            });
+            ttsVoice.appendChild(optgroup);
+        }
+        
+        // 기타 음성
+        if (grouped.other.length > 0) {
+            const optgroup = document.createElement('optgroup');
+            optgroup.label = '기타';
+            grouped.other.forEach(voice => {
+                const option = document.createElement('option');
+                option.value = voice.name;
+                option.textContent = `${voice.name} (${voice.lang})`;
+                if (voice === window.ttsManager.currentVoice) {
+                    option.selected = true;
+                }
+                optgroup.appendChild(option);
+            });
+            ttsVoice.appendChild(optgroup);
         }
     }
 
